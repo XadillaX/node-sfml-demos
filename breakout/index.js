@@ -23,7 +23,7 @@ const BOARD_WIDTH = 100;
 let boardX = 512;
 const boardY = 700;
 const board = new RectangleShape({ x: BOARD_WIDTH, y: BOARD_HEIGHT });
-const boardSpeed = 1024 * 3;
+const boardSpeed = 1024 * 4;
 board.setPosition((boardX - (BOARD_WIDTH / 2)), boardY);
 
 const BALL_RADIUS = 12;
@@ -312,11 +312,11 @@ async function loop() {
 
   const newDT = innerClock.getElapsedTime();
 
-  const need = 1000 / 120;
+  const need = 1000 / 240;
   let next = need - newDT.asMilliseconds();
   if (next < 0) next = 0;
 
   setTimeout(loop, next);
 }
 
-setTimeout(loop, 1000 / 120);
+setTimeout(loop, 1000 / 240);
