@@ -1,0 +1,16 @@
+{
+  "name": "breakout",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sfml.js": "^0.0.1-preview.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-egg": "^9.0.0"
+  }
+}
