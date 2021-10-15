@@ -7,7 +7,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "sfml.js": "0.0.1-preview.12"
+    "sfml.js": "0.0.1-preview.13"
   },
   "devDependencies": {
     "eslint": "^8.0.1",

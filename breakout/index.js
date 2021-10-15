@@ -3,6 +3,7 @@
 const {
   CircleShape,
   Clock,
+  Keyboard,
   RectangleShape,
   RenderWindow,
   Vector2F,
@@ -23,7 +24,7 @@ const BOARD_WIDTH = 100;
 let boardX = 512;
 const boardY = 700;
 const board = new RectangleShape({ x: BOARD_WIDTH, y: BOARD_HEIGHT });
-const boardSpeed = 1024 * 4;
+const boardSpeed = 1024;
 board.setPosition((boardX - (BOARD_WIDTH / 2)), boardY);
 
 const BALL_RADIUS = 12;
@@ -230,40 +231,26 @@ async function frame(deltaTime, events) {
         break;
       }
 
-      case 'KeyPressed': {
-        switch (event.key.codeStr) {
-          case 'Escape': {
-            window.close();
-            break;
-          }
-
-          case 'A':
-          case 'Left': {
-            leftPressed = true;
-            break;
-          }
-
-          case 'D':
-          case 'Right': {
-            rightPressed = true;
-            break;
-          }
-
-          case 'Space': {
-            spacePressed = true;
-            break;
-          }
-
-          default: break;
-        }
-
-        break;
-      }
-
       default: {
         break;
       }
     }
+  }
+
+  if (Keyboard.isKeyPressed('Escape')) {
+    window.close();
+  }
+
+  if (Keyboard.isKeyPressed('A') || Keyboard.isKeyPressed('Left')) {
+    leftPressed = true;
+  }
+
+  if (Keyboard.isKeyPressed('D') || Keyboard.isKeyPressed('Right')) {
+    rightPressed = true;
+  }
+
+  if (Keyboard.isKeyPressed('Space')) {
+    spacePressed = true;
   }
 
   if (!window.isOpen()) return;
