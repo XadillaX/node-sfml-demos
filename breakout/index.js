@@ -1,11 +1,16 @@
 'use strict';
 
+const path = require('path');
+
 const {
   CircleShape,
   Clock,
+  Color,
+  Font,
   Keyboard,
   RectangleShape,
   RenderWindow,
+  Text,
   Vector2F,
   VideoMode,
 } = require('sfml.js');
@@ -14,6 +19,12 @@ const videoMode = new VideoMode(1024, 768, 32);
 const window = new RenderWindow(videoMode, 'Breakout', 5);
 const clock = new Clock();
 const innerClock = new Clock();
+
+const font = new Font();
+font.loadFromFile(path.join(__dirname, 'font.ttf'));
+const text = new Text('帧率：0', font, 20);
+text.setPosition(10, 250);
+text.setColor(new Color(0xff, 0x78, 0x00, 0xff));
 
 let spacePressed = false;
 let leftPressed = false;
@@ -222,6 +233,7 @@ function done() {
 }
 
 async function frame(deltaTime, events) {
+  text.setString(`帧率：${(1000 / deltaTime.asMilliseconds()).toFixed(2)}FPS`);
   spacePressed = leftPressed = rightPressed = false;
 
   for (const event of events) {
@@ -276,6 +288,7 @@ async function render() {
     if (bricksDisplay[i]) window.draw(bricks[i]);
   }
 
+  window.draw(text);
   window.display();
 }
 
@@ -299,11 +312,11 @@ async function loop() {
 
   const newDT = innerClock.getElapsedTime();
 
-  const need = 1000 / 240;
+  const need = 1000 / 120;
   let next = need - newDT.asMilliseconds();
   if (next < 0) next = 0;
 
   setTimeout(loop, next);
 }
 
-setTimeout(loop, 1000 / 240);
+setTimeout(loop, 1000 / 120);
