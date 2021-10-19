@@ -233,7 +233,7 @@ function done() {
 }
 
 async function frame(deltaTime, events) {
-  text.setString(`帧率：${(1000 / deltaTime.asMilliseconds()).toFixed(2)}FPS`);
+  text.setString(`帧率：${(1000 / deltaTime.asMilliseconds()).toFixed(0)}FPS`);
   spacePressed = leftPressed = rightPressed = false;
 
   for (const event of events) {
