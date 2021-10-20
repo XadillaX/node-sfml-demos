@@ -9,3 +9,9 @@ Demos for sfml.js.
 ### Breakout
 
 ![](./breakout/screenshot.gif)
+
+### Tetris
+
+> This code is modified from https://github.com/jsyqrt/games/blob/master/01%20Tetris/main.cpp. The original code is not yet entirely finished, so this code is note entirely finished too.
+
+![](./tetris/screenshot.gif)
