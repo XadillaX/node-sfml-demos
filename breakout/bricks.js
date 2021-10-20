@@ -29,6 +29,7 @@ class Brick extends RectangleShape {
     this.display = false;
   }
 
+  // Refs: https://www.zhihu.com/question/24251545/answer/27184960
   intersect(ball) {
     if (!this.display) return false;
 
