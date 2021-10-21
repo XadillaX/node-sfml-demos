@@ -59,7 +59,6 @@ function loop() {
   clock.restart();
   text.setString(`FPS: ${(1000 / time).toFixed(0)}`);
 
-
   let e;
   while ((e = window.pollEvent())) {
     if (e.type === 'Closed') {

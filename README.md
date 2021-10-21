@@ -23,3 +23,11 @@ Demos for sfml.js.
 > This code is modified from https://github.com/jsyqrt/games/blob/master/02%20Doodle%20Jump/main.cpp. The original code is not yet entirely finished, so this code is note entirely finished too.
 
 ![](./doodle_jump/screenshot.png)
+
+### Arkanoid
+
+> This code is modified from https://github.com/jsyqrt/games/blob/master/03%20Arkanoid/main.cpp. The original code is not yet entirely finished, so this code is note entirely finished too.
+>
+> See also https://github.com/XadillaX/node-sfml-demos/tree/main/breakout.
+
+![](./arkanoid/screenshot.png)
