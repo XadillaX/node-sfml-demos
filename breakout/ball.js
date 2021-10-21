@@ -1,7 +1,11 @@
 'use strict';
 
+const path = require('path');
+
 const {
   CircleShape,
+  Sprite,
+  Texture,
   Vector2F,
 } = require('sfml.js');
 
@@ -16,6 +20,16 @@ class Ball extends CircleShape {
     if (!Game) Game = require('./game');
 
     this.speed = Game.WINDOW_WIDTH / 2;
+  }
+
+  async init() {
+    this.texture = new Texture();
+    await this.texture.loadFromFile(path.join(__dirname, '../arkanoid/images/ball.png'));
+    this.sprite = new Sprite(this.texture);
+
+    const textureSize = this.texture.getSize();
+    this.sprite.setScale(Ball.RADIUS * 2 / textureSize.x, Ball.RADIUS * 2 / textureSize.y);
+
     this.reset();
   }
 
@@ -28,12 +42,13 @@ class Ball extends CircleShape {
   moveTo(vec) {
     this.center = vec;
     this.pos = new Vector2F(this.center.x - Ball.RADIUS, this.center.y - Ball.RADIUS);
+    this.sprite.setPosition(this.pos);
     this.setPosition(this.pos);
     this.bounds = this.getLocalBounds();
   }
 
   setDoneColor() {
-    this.setFillColor(0xff0000ff);
+    this.sprite.setColor(0xff0000ff);
   }
 
   normalFly(game, deltaTimeSeconds, board) {
@@ -69,11 +84,11 @@ class Ball extends CircleShape {
   }
 
   setAvaiableColor() {
-    this.setFillColor(0xffffffff);
+    this.sprite.setColor(0xffffffff);
   }
 
   render(window) {
-    window.draw(this);
+    window.draw(this.sprite);
   }
 }
 

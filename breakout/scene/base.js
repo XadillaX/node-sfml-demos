@@ -14,6 +14,7 @@ class BaseScene {
   render() {
     const { window, board, ball, bricks, fpsText } = this.game;
     window.clear();
+    window.draw(this.game.background);
     board.render(window);
     ball.render(window);
     bricks.render(window);

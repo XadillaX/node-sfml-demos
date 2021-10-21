@@ -1,9 +1,13 @@
 'use strict';
 
+const path = require('path');
+
 const {
   Clock,
   Keyboard,
   RenderWindow,
+  Sprite,
+  Texture,
   VideoMode,
 } = require('sfml.js');
 
@@ -18,7 +22,7 @@ class Game {
     this.clock = new Clock();
   }
 
-  init() {
+  async init() {
     this.window.setFramerateLimit(60);
     this.window.setVerticalSyncEnabled(true);
 
@@ -26,6 +30,20 @@ class Game {
     this.board = new Board();
     this.bricks = new Bricks();
     this.fpsText = new FPSText();
+
+    this.backgroundTexture = new Texture();
+
+    await Promise.all([
+      this.backgroundTexture.loadFromFile(path.join(__dirname, 'images/starry.jpeg')),
+      this.ball.init(),
+      this.bricks.init(),
+      this.board.init(),
+    ]);
+
+    const backgroundTextureSize = this.backgroundTexture.getSize();
+    this.background = new Sprite(this.backgroundTexture);
+    this.background.setScale(Game.WINDOW_WIDTH / backgroundTextureSize.x, Game.WINDOW_HEIGHT / backgroundTextureSize.y);
+    this.background.setPosition(0, 0);
 
     this.state = 'READY';
 

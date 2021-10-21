@@ -1,7 +1,11 @@
 'use strict';
 
+const path = require('path');
+
 const {
   RectangleShape,
+  Sprite,
+  Texture,
 } = require('sfml.js');
 
 let Game;
@@ -14,6 +18,17 @@ class Board extends RectangleShape {
     this.speed = Game.WINDOW_WIDTH;
   }
 
+  async init() {
+    this.texture = new Texture();
+    await this.texture.loadFromFile(path.join(__dirname, '../arkanoid/images/paddle.png'));
+    this.sprite = new Sprite(this.texture);
+
+    const textureSize = this.texture.getSize();
+    this.sprite.setScale(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y);
+
+    this.reset();
+  }
+
   reset() {
     this.moveTo(Game.WINDOW_WIDTH / 2);
     this.setAvaiableColor();
@@ -24,6 +39,7 @@ class Board extends RectangleShape {
     if (x > Game.WINDOW_WIDTH - (Board.WIDTH / 2)) x = Game.WINDOW_WIDTH - (Board.WIDTH / 2);
 
     this.setPosition((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2);
+    this.sprite.setPosition((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2);
     this.x = x;
   }
 
@@ -36,15 +52,15 @@ class Board extends RectangleShape {
   }
 
   setAvaiableColor() {
-    this.setFillColor(0xffffffff);
+    this.sprite.setColor(0xffffffff);
   }
 
   setDoneColor() {
-    this.setFillColor(0xff0000ff);
+    this.sprite.setColor(0xff0000ff);
   }
 
   render(window) {
-    window.draw(this);
+    window.draw(this.sprite);
   }
 }
 

@@ -1,12 +1,19 @@
 'use strict';
 
+const path = require('path');
+
+const _ = require('lodash');
 const {
   RectangleShape,
+  Sprite,
+  Texture,
   Vector2F,
 } = require('sfml.js');
 
 const Ball = require('./ball');
 const Board = require('./board');
+
+const textures = [];
 
 class Brick extends RectangleShape {
   constructor(pos) {
@@ -22,11 +29,17 @@ class Brick extends RectangleShape {
   }
 
   show() {
+    const texture = textures[_.random(0, 4, false)];
+    const textureSize = texture.getSize();
+    this.sprite = new Sprite(texture);
+    this.sprite.setScale(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y);
+    this.sprite.setPosition(this.pos);
     this.display = true;
   }
 
   hide() {
     this.display = false;
+    this.sprite = null;
   }
 
   // Refs: https://www.zhihu.com/question/24251545/answer/27184960
@@ -93,7 +106,15 @@ class Brick extends RectangleShape {
 Brick.HALF_SIZE_VECTOR = new Vector2F(Board.WIDTH / 2, Board.HEIGHT / 2);
 
 class Bricks {
-  constructor() {
+  async init() {
+    const promises = [];
+    for (let i = 1; i <= 5; i++) {
+      textures.push(new Texture());
+      promises.push(
+        textures[textures.length - 1].loadFromFile(path.join(__dirname, `../arkanoid/images/block0${i}.png`)));
+    }
+    await Promise.all(promises);
+
     this.elements = [];
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
@@ -112,7 +133,7 @@ class Bricks {
   render(window) {
     for (const element of this.elements) {
       if (element.display) {
-        window.draw(element);
+        window.draw(element.sprite);
       }
     }
   }
