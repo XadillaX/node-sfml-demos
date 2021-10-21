@@ -5,16 +5,24 @@ const path = require('path');
 const _ = require('lodash');
 const {
   Clock,
+  Font,
   IntRect,
   Keyboard,
   RenderWindow,
   Sprite,
+  Text,
   Texture,
   VideoMode,
 } = require('sfml.js');
 
 const M = 20;
 const N = 10;
+
+const font = new Font();
+font.loadFromFile(path.join(__dirname, '../breakout/font.ttf'));
+const text = new Text('FPS: -', font, 15);
+text.setPosition(240, 20);
+text.setFillColor(0xff7800ff);
 
 const field = [];
 for (let i = 0; i < M; i++) {
@@ -42,6 +50,8 @@ for (let i = 0; i < 4; i++) {
 }
 
 const window = new RenderWindow(new VideoMode(320, 480, 32), 'The Game!');
+window.setFramerateLimit(120);
+window.setVerticalSyncEnabled(true);
 const t1 = new Texture();
 const t2 = new Texture();
 const t3 = new Texture();
@@ -66,6 +76,14 @@ async function init() {
   s.setTexture(t1);
   background.setTexture(t2);
   frame.setTexture(t3);
+
+  // first block
+  colorNum = _.random(1, 7, false);
+  const n = _.random(0, 6, false);
+  for (let i = 0; i < 4; i++) {
+    a[i].x = figures[n][i] % 2;
+    a[i].y = parseInt(figures[n][i] / 2);
+  }
 }
 
 function check() {
@@ -89,6 +107,8 @@ function loop() {
   const time = clock.getElapsedTime().asSeconds();
   clock.restart();
   timer += time;
+
+  text.setString(`FPS: ${(1 / time).toFixed(0)}`);
 
   let e;
   while ((e = window.pollEvent())) {
@@ -198,9 +218,10 @@ function loop() {
   }
 
   window.draw(frame);
+  window.draw(text);
   window.display();
 
-  setTimeout(loop, 1000 / 60);
+  setImmediate(loop);
 }
 
 init().then(() => {

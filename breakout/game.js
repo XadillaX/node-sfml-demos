@@ -14,12 +14,14 @@ const FPSText = require('./fps_text');
 
 class Game {
   constructor() {
-    this.window = new RenderWindow(new VideoMode(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, 32), 'Breakout', 5);
+    this.window = new RenderWindow(new VideoMode(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, 32), 'Breakout!', 5);
     this.clock = new Clock();
-    this.innerClock = new Clock();
   }
 
   init() {
+    this.window.setFramerateLimit(60);
+    this.window.setVerticalSyncEnabled(true);
+
     this.ball = new Ball();
     this.board = new Board();
     this.bricks = new Bricks();
@@ -74,7 +76,6 @@ class Game {
   run() {
     const dt = this.clock.getElapsedTime();
     this.clock.restart();
-    this.innerClock.restart();
 
     if (!this.window.isOpen()) return;
 
@@ -88,13 +89,7 @@ class Game {
     if (!this.window.isOpen()) return;
     this.render();
 
-    const newDT = this.innerClock.getElapsedTime();
-
-    const need = 1000 / Game.FPS;
-    let next = need - newDT.asMilliseconds();
-    if (next < 0) next = 0;
-
-    setTimeout(this.run.bind(this), next);
+    setImmediate(this.run.bind(this));
   }
 }
 

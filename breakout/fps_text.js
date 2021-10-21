@@ -16,7 +16,7 @@ class FPSText extends Text {
     super('帧率：0', font, 20);
 
     this.setPosition(10, 250);
-    this.setColor(new Color(0xff, 0x78, 0x00, 0xff));
+    this.setFillColor(new Color(0xff, 0x78, 0x00, 0xff));
   }
 
   calcFPS(dt) {
