@@ -4,6 +4,8 @@ Demos for sfml.js.
 
 > Write Desktop Games by Node.js!
 
+> [sfml.js](https://www.npmjs.com/package/sfml.js) is still under developing and it's GitHub repo is private so far. I will make it as public when I think it's good enough.
+
 ## Previews
 
 ### Breakout
