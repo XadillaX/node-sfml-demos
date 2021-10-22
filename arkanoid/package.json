@@ -8,7 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.21",
-    "sfml.js": "0.0.1-preview.20"
+    "sfml.js": "0.0.1-preview.22"
   },
   "devDependencies": {
     "eslint": "^8.0.1",
