@@ -147,7 +147,7 @@ class Slider {
                 this.sliderAfterGrasper.getSize().x - (this.grasper.getPosition().x - grasperOldXPos),
                 this.sliderAfterGrasper.getSize().y));
             this.oldMousePositionX = event.mouseMove.x;
-            this.value = (this.grasper.getPosition().x - (this.grasper.getSize().x / 2) - this.slider.getPosition().x) / this.slider.getSize().x;
+            this.value = (this.grasper.getPosition().x + (this.grasper.getSize().x / 2) - this.slider.getPosition().x) / this.slider.getSize().x;
           }
         } else if (this.sliderOrient === 'vertical') {
           if (
