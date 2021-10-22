@@ -2,15 +2,9 @@
 
 const path = require('path');
 
-const {
-  Color,
-  Font,
-  Sprite,
-  Text,
-  Texture,
-  Vector2F,
-} = require('sfml.js');
+const { Color, Font, Sprite, Text, Texture, Vector2F } = require('sfml.js');
 
+// https://github.com/PiGames/Bomberman/blob/master/Bomberman/Button.cpp
 class Button {
   constructor(position, size, pressTextureSrc, unpressTextureSrc, text) {
     this.position = position;
@@ -26,7 +20,9 @@ class Button {
 
     const textRect = this.text.getLocalBounds();
     this.text.setOrigin(textRect.left + textRect.width / 2, 0);
-    this.text.setPosition(new Vector2F(position.x + size.x / 2, position.y + size.y / 4));
+    this.text.setPosition(
+      new Vector2F(position.x + size.x / 2, position.y + size.y / 4)
+    );
 
     this.press = false;
 
@@ -42,17 +38,31 @@ class Button {
     this.pressSprite = new Sprite(this.pressTexture);
     this.pressSprite.setPosition(this.position);
     this.pressSprite.setScale(
-      new Vector2F(this.size.x / this.pressTexture.getSize().x, this.size.y / this.pressTexture.getSize().y));
+      new Vector2F(
+        this.size.x / this.pressTexture.getSize().x,
+        this.size.y / this.pressTexture.getSize().y
+      )
+    );
 
     this.unpressSprite = new Sprite(this.unpressTexture);
     this.unpressSprite.setPosition(this.position);
     this.unpressSprite.setScale(
-      new Vector2F(this.size.x / this.unpressTexture.getSize().x, this.size.y / this.unpressTexture.getSize().y));
+      new Vector2F(
+        this.size.x / this.unpressTexture.getSize().x,
+        this.size.y / this.unpressTexture.getSize().y
+      )
+    );
   }
 
   check(mousePosition) {
-    if (mousePosition.x > this.position.x && mousePosition.x < this.position.x + this.size.x) {
-      if (mousePosition.y > this.position.y && mousePosition.y < this.position.y + this.size.y) {
+    if (
+      mousePosition.x > this.position.x &&
+      mousePosition.x < this.position.x + this.size.x
+    ) {
+      if (
+        mousePosition.y > this.position.y &&
+        mousePosition.y < this.position.y + this.size.y
+      ) {
         return true;
       }
     }
@@ -60,8 +70,7 @@ class Button {
     return false;
   }
 
-  doAction() {
-  }
+  doAction() {}
 
   update(mousePosition, buttonPressed) {
     if (this.check(mousePosition)) {

@@ -18,8 +18,10 @@ const {
 } = require('sfml.js');
 
 const Button = require('./button');
+const Game = require('./game');
 const Slider = require('./slider');
 
+// https://github.com/PiGames/Bomberman/blob/master/Bomberman/Menu.cpp
 class Menu {
   constructor(width, height) {
     this.clock = new Clock();
@@ -29,7 +31,8 @@ class Menu {
     this.window = new RenderWindow(
       new VideoMode(width, height, 32),
       'Bomberman',
-      RenderWindow.Style.Close);
+      RenderWindow.Style.Close
+    );
     this.window.setFramerateLimit(60);
 
     this.exit = false;
@@ -53,7 +56,7 @@ class Menu {
     }
 
     this.optionsText[0].setString('HP PER GAME:');
-    this.optionsText[2].setString('3');
+    this.optionsText[2].setString('2');
     this.optionsText[1].setString('VOLUME LEVEL:');
     this.optionsText[3].setString('60%');
 
@@ -64,21 +67,35 @@ class Menu {
 
     this.playerSlider = new Slider(
       'horizontal',
-      new Vector2F(460, 180), 100, 30, 470, 80, 20, 10,
+      new Vector2F(460, 180),
+      100,
+      30,
+      470,
+      80,
+      20,
+      10,
       new Color(0, 148, 154),
       new Color(229, 229, 229),
       new Color(160, 160, 160),
-      new Color(255, 255, 255));
+      new Color(255, 255, 255)
+    );
     this.playerSlider.setValue(0.4);
     this.playerLives = 2;
 
     this.volumnSlider = new Slider(
       'horizontal',
-      new Vector2F(460, 260), 100, 30, 470, 80, 20, 10,
+      new Vector2F(460, 260),
+      100,
+      30,
+      470,
+      80,
+      20,
+      10,
       new Color(0, 148, 154),
       new Color(229, 229, 229),
       new Color(160, 160, 160),
-      new Color(255, 255, 255));
+      new Color(255, 255, 255)
+    );
     this.volumnSlider.setValue(0.6);
     this.volumn = 60;
   }
@@ -90,34 +107,43 @@ class Menu {
         new Vector2I(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
-        'START'),
+        'START'
+      ),
       new Button(
         new Vector2F(this.windowWidth / 2 - 150, this.windowHeight / 1.7 - 50),
         new Vector2I(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
-        'OPTIONS'),
+        'OPTIONS'
+      ),
       new Button(
         new Vector2F(
-          this.windowWidth / 2 - 150, this.windowHeight / 1.7 + 100 - 50),
+          this.windowWidth / 2 - 150,
+          this.windowHeight / 1.7 + 100 - 50
+        ),
         new Vector2I(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
-        'CREDITS'),
+        'CREDITS'
+      ),
       new Button(
         new Vector2F(
-          this.windowWidth / 2 - 150, this.windowHeight / 1.7 + 200 - 50),
+          this.windowWidth / 2 - 150,
+          this.windowHeight / 1.7 + 200 - 50
+        ),
         new Vector2I(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
-        'EXIT'),
+        'EXIT'
+      ),
     ];
     this.optionReturnButton = new Button(
       new Vector2F(25, this.windowHeight - 100),
       new Vector2I(300, 75),
       'data/pressButton.png',
       'data/unpressButton.png',
-      'RETURN TO MENU');
+      'RETURN TO MENU'
+    );
 
     await Promise.all(this.buttons.map(button => button.init()));
     await this.optionReturnButton.init();
@@ -128,7 +154,9 @@ class Menu {
     this.backgroundSprite.setScale(
       new Vector2F(
         this.windowWidth / texture.getSize().x,
-        this.windowHeight / texture.getSize().y));
+        this.windowHeight / texture.getSize().y
+      )
+    );
 
     texture = new Texture();
     await texture.loadFromFile(path.join(__dirname, 'data/menuPiGames.png'));
@@ -137,7 +165,9 @@ class Menu {
     this.pigamesLogoSprite.setScale(
       new Vector2F(
         this.windowHeight / texture.getSize().y / 8,
-        this.windowHeight / texture.getSize().y / 8));
+        this.windowHeight / texture.getSize().y / 8
+      )
+    );
 
     texture = new Texture();
     await texture.loadFromFile(path.join(__dirname, 'data/menuLogo.png'));
@@ -146,31 +176,37 @@ class Menu {
     this.gameLogoSprite.setScale(
       new Vector2F(
         this.windowHeight / texture.getSize().y / 7,
-        this.windowHeight / texture.getSize().y / 7));
+        this.windowHeight / texture.getSize().y / 7
+      )
+    );
     this.gameLogoSprite.setPosition(
       new Vector2F(
         this.windowWidth / 2 -
           (texture.getSize().x * this.gameLogoSprite.getScale().x) / 2,
-        this.windowHeight / 5 - 30));
+        this.windowHeight / 5 - 30
+      )
+    );
 
     const textRect = this.gameVersion.getLocalBounds();
     this.gameVersion.setPosition(
-      this.gameLogoSprite.getPosition().x + texture.getSize().x *
-        this.gameLogoSprite.getScale().x - textRect.width * 0.8,
-      this.gameLogoSprite.getPosition().y + texture.getSize().y *
-        this.gameLogoSprite.getScale().y);
+      this.gameLogoSprite.getPosition().x +
+        texture.getSize().x * this.gameLogoSprite.getScale().x -
+        textRect.width * 0.8,
+      this.gameLogoSprite.getPosition().y +
+        texture.getSize().y * this.gameLogoSprite.getScale().y
+    );
 
     texture = new Texture();
     await texture.loadFromFile(path.join(__dirname, 'data/credits.png'));
     this.creditsSprite = new Sprite(texture);
   }
 
-  run() {
+  async run() {
     this.clock.restart();
     if (this.exit) return;
 
     this.draw();
-    this.processEvents();
+    await this.processEvents();
     if (this._options) {
       this.options();
     }
@@ -188,23 +224,19 @@ class Menu {
     } else if (this.volumn > 87) {
       this.volumn = 100;
     }
-
     this.optionsText[3].setString(`${this.volumn}%`);
 
     this.playerLives = this.playerSlider.getValue() * 5;
     if (this.playerSlider.getValue() === 0) {
-      this.playerSlider.setValue(0.2);
+      this.playerSlider.setValue(0.4);
       this.playerLives = 2;
     } else if (this.playerLives < 0.6) {
       this.playerLives = 0;
     } else if (this.playerLives >= 4.5) {
       this.playerLives = 5;
     }
-
     this.playerLives = parseInt(this.playerLives) + 1;
     this.optionsText[2].setString(`${this.playerLives}`);
-
-    console.log(this.volumnSlider.getValue(), this.playerSlider.getValue());
   }
 
   draw() {
@@ -243,7 +275,7 @@ class Menu {
     this.window.display();
   }
 
-  processEvents() {
+  async processEvents() {
     let event;
     const mouseI = Mouse.getPosition(this.window);
     const mouse = new Vector2F(mouseI.x, mouseI.y);
@@ -258,32 +290,56 @@ class Menu {
         this.playerSlider.update(Mouse.getPosition(this.window), event);
         this.volumnSlider.update(Mouse.getPosition(this.window), event);
 
-        if (event.type === 'MouseButtonReleased' &&
-            event.mouseButton.buttonStr === 'Left' && !this.credits) {
+        if (
+          event.type === 'MouseButtonReleased' &&
+          event.mouseButton.buttonStr === 'Left' &&
+          !this.credits
+        ) {
           this.optionReturnButton.update(Mouse.getPosition(this.window), false);
-          if (this.optionReturnButton.getSprite().getGlobalBounds().contains(mouse)) {
+          if (
+            this.optionReturnButton
+              .getSprite()
+              .getGlobalBounds()
+              .contains(mouse)
+          ) {
             this._options = false;
           }
         }
-      } else if (event.type === 'MouseButtonReleased' &&
-          event.mouseButton.buttonStr === 'Left' && !this.credits) {
+      } else if (
+        event.type === 'MouseButtonReleased' &&
+        event.mouseButton.buttonStr === 'Left' &&
+        !this.credits
+      ) {
         for (const button of this.buttons) {
           button.update(Mouse.getPosition(this.window), false);
         }
 
         if (this.buttons[0].getSprite().getGlobalBounds().contains(mouse)) {
           console.log('Start!');
-        } else if (this.buttons[1].getSprite().getGlobalBounds().contains(mouse)) {
+          const game = new Game(this.window);
+          await game.init(this.volumn, this.volumn, this.playerLives);
+          this.exit = !(await game.run());
+          return;
+        } else if (
+          this.buttons[1].getSprite().getGlobalBounds().contains(mouse)
+        ) {
           this._options = true;
-        } else if (this.buttons[2].getSprite().getGlobalBounds().contains(mouse)) {
+        } else if (
+          this.buttons[2].getSprite().getGlobalBounds().contains(mouse)
+        ) {
           this.credits = true;
-        } else if (this.buttons[3].getSprite().getGlobalBounds().contains(mouse)) {
+        } else if (
+          this.buttons[3].getSprite().getGlobalBounds().contains(mouse)
+        ) {
           this.exit = true;
         }
       }
 
-      if (event.type === 'MouseButtonPressed' &&
-          event.mouseButton.buttonStr === 'Left' && !this.credits) {
+      if (
+        event.type === 'MouseButtonPressed' &&
+        event.mouseButton.buttonStr === 'Left' &&
+        !this.credits
+      ) {
         if (this._options) {
           this.optionReturnButton.update(Mouse.getPosition(this.window), true);
           break;
