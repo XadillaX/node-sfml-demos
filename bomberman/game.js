@@ -2,7 +2,17 @@
 
 const path = require('path');
 
-const { Clock, Font, Keyboard, Mouse } = require('sfml.js');
+const {
+  Clock,
+  Color,
+  Font,
+  Keyboard,
+  Mouse,
+  RectangleShape,
+  Sprite,
+  Text,
+  Texture,
+} = require('sfml.js');
 
 const Animator = require('./animator');
 const BombManager = require('./bomb_manager');
@@ -51,7 +61,7 @@ class Game {
     this.numberOfRespawns = 0;
     this.numberOfPlayers = 2;
     this.font = new Font();
-    this.pause = false;
+    this._pause = false;
 
     this.out = {
       enterMenu: true,
@@ -254,7 +264,9 @@ class Game {
           this.players[0].onActionKeyPressed();
         }
 
-        // TODO: Pause
+        if (event.type === 'KeyPressed' && event.key.codeStr === 'Escape') {
+          this._pause = true;
+        }
       }
     }
   }
@@ -275,6 +287,10 @@ class Game {
   }
 
   async update(dt) {
+    if (this._pause) {
+      this.pause();
+    }
+
     this.physicsEngine.update(dt);
 
     for (let i = 0; i < this.players.length; i++) {
@@ -329,6 +345,44 @@ class Game {
 
     this.gui.draw(this.window);
     this.window.display();
+  }
+
+  pause() {
+    const scrn = this.window.capture();
+    const scrnTexture = new Texture();
+    scrnTexture.create(this.windowWidth, this.windowHeight);
+    scrnTexture.update(scrn);
+    const sprite = new Sprite(scrnTexture);
+    const filter = new RectangleShape({
+      x: this.windowWidth,
+      y: this.windowHeight,
+    });
+    filter.setFillColor(new Color(255, 255, 255, 155));
+
+    const pauseText = new Text('PAUSED', this.font, 25);
+    pauseText.setFillColor(new Color(247, 148, 142));
+    pauseText.setPosition(
+      this.windowWidth / 2 - pauseText.getGlobalBounds().width / 2,
+      this.windowHeight / 2);
+
+    let event;
+    while (this._pause && !this.endOfGame && !this.out.exit) {
+      while ((event = this.window.pollEvent())) {
+        if (event.type === 'KeyPressed' && event.key.codeStr === 'Escape') {
+          this._pause = false;
+        }
+
+        if (event.type === 'Closed') {
+          this.out.exit = true;
+        }
+      }
+
+      this.window.clear();
+      this.window.draw(sprite);
+      this.window.draw(filter);
+      this.window.draw(pauseText);
+      this.window.display();
+    }
   }
 }
 
