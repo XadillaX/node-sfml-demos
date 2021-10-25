@@ -8,6 +8,12 @@ Demos for sfml.js.
 
 ## Previews
 
+### Bomberman
+
+> This is a JavaScript fork of the [C++ SFML Bomberman Game](https://github.com/PiGames/Bomberman).
+
+![](./bomberman/screenshot.gif)
+
 ### Breakout
 
 ![](./breakout/screenshot.gif)
