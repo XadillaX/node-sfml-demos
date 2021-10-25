@@ -123,10 +123,11 @@ class Bomb extends PhysicalBody {
         false
       );
       this.state = STATE.EXPLODING;
+      this.explode();
     } else if (
       this.detonationClock.getElapsedTime().asSeconds() >=
-        this.detonationClock.asSeconds() + this.rayOnScreenTime.asSeconds() &&
-      this.state < STATE.EXPLODING
+        this.detonationTime.asSeconds() + this.rayOnScreenTime.asSeconds() &&
+      this.state < STATE.EXPLODED
     ) {
       this.state = STATE.EXPLODED;
       for (let i = 0; i < this.tilesToDeleteAfterExplosion.length; i++) {
@@ -310,6 +311,8 @@ class Bomb extends PhysicalBody {
       default:
         break;
     }
+
+    return size;
   }
 
   getState() {
@@ -341,8 +344,8 @@ class Bomb extends PhysicalBody {
   }
 
   setPosition(x, y) {
-    x = this.positionInTilesCoordsX = x / TILE_SIZE;
-    y = this.positionInTilesCoordsY = y / TILE_SIZE;
+    x = this.positionInTilesCoordsX = parseInt(x / TILE_SIZE);
+    y = this.positionInTilesCoordsY = parseInt(y / TILE_SIZE);
     this.setPositionX(x * TILE_SIZE + TILE_SIZE / 2);
     this.setPositionY(y * TILE_SIZE + TILE_SIZE / 2);
   }

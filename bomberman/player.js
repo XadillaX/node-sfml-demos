@@ -93,15 +93,19 @@ class Player extends PhysicalBody {
       0,
       this.bombTextureAtlas.getCount() - 1
     );
-    this.bomb.setAnimator(this.bombAnimator);
+    this.bomb.setAnimator(
+      this.bombAnimator,
+      this.bombTextureAtlas.getCellSizeX(),
+      this.bombTextureAtlas.getCellSizeY()
+    );
     this.bomb.setUpRay(this.bombRayTextureAtlas);
     this.bomb.setDetonationTime(seconds(3.108));
     this.bomb.setRayOnScreenTime(seconds(0.9));
     this.bomb.setPosition(this.getPositionX(), this.getPositionY());
     this.bomb.setLevel(this.level);
     this.level.setTileAsBomb(
-      this.getPositionX() / TILE_SIZE,
-      this.getPositionY() / TILE_SIZE
+      parseInt(this.getPositionX() / TILE_SIZE),
+      parseInt(this.getPositionY() / TILE_SIZE)
     );
   }
 

@@ -98,12 +98,89 @@ class GUI {
     this.winnerText.setScale(1.2, 1.2);
   }
 
+  updateStats(players /** , mouseX, mouseY */) {
+    this.endOfGameMenuView = false;
+    this.gameGUIView = true;
+    for (let i = 0; i < players.length; i++) {
+      switch (i) {
+        case 0:
+          this.playerOneLives.setString(`Player 1 Lives: ${players[i].getRespawnsCount()}`);
+          break;
+        case 1:
+          this.playerSecondLives.setString(`Player 2 Lives: ${players[i].getRespawnsCount()}`);
+          break;
+        default:
+          break;
+      }
+
+      if (players[i].getWin()) {
+        this.whoWin = i;
+        this.winnerText.setString(`Player ${this.whoWin + 1} Wins!`);
+        break;
+      } else {
+        // ??
+      }
+    }
+  }
+
+  updateStatsOutter(players, mouseX, mouseY) {
+    this.updateStats(players, mouseX, mouseY);
+    this.endOfGameMenuView = true;
+    this.gameGUIView = false;
+  }
+
+  processEvent(mousePos, event) {
+    if (this.endOfGameMenuView) {
+      if (event.type === 'MouseButtonReleased' && event.mouseButton.buttonStr === 'Left') {
+        this.returnToMenuButton.update(mousePos, false);
+        this.playAgainButton.update(mousePos, false);
+        this.exitButton.update(mousePos, false);
+
+        if (this.returnToMenuButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+          this.out.playAgain = false;
+          this.out.enterMenu = true;
+          this.out.exit = true;
+        }
+
+        if (this.playAgainButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+          this.out.playAgain = true;
+          this.out.enterMenu = false;
+          this.out.exit = false;
+        }
+
+        if (this.exitButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+          this.out.playAgain = false;
+          this.out.enterMenu = false;
+          this.out.exit = true;
+        }
+      }
+
+      if (event.type === 'MouseButtonPressed' && event.mouseButton.buttonStr === 'Left') {
+        this.returnToMenuButton.update(mousePos, true);
+        this.playAgainButton.update(mousePos, true);
+        this.exitButton(mousePos, true);
+      }
+    }
+  }
+
   draw(window) {
     this.rect.setFillColor(new Color(255, 255, 255, 155));
     this.rect.setSize(new Vector2F(this.screenWidth, this.screenHeight));
 
     if (this.endOfGameMenuView) {
-      //
+      window.draw(this.frame);
+      window.draw(this.rect);
+
+      window.draw(this.returnToMenuButton.getSprite());
+      window.draw(this.returnToMenuButton.getText());
+
+      window.draw(this.playAgainButton.getSprite());
+      window.draw(this.playAgainButton.getText());
+
+      window.draw(this.exitButton.getSprite());
+      window.draw(this.exitButton.getText());
+
+      window.draw(this.winnerText);
     }
 
     if (this.gameGUIView) {

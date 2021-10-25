@@ -9,25 +9,34 @@ const BODY_POSITION_STATE = {
 
 // https://github.com/PiGames/Bomberman/blob/master/Bomberman/PhysicalBody.cpp
 class PhysicalBody {
-  constructor() {
-    this.sizeX = 0;
-    this.sizeY = 0;
-    this.posX = 0;
-    this.posY = 0;
-    this.vX = 0;
-    this.vY = 0;
-    this.movementX = 0;
-    this.movementY = 0;
+  /**
+   * Constructor
+   * @param {PhysicalBody} [another] Another body
+   */
+  constructor(another) {
+    this.sizeX = another ? another.sizeX : 0;
+    this.sizeY = another ? another.sizeY : 0;
+    this.posX = another ? another.posX : 0;
+    this.posY = another ? another.posY : 0;
+    this.vX = another ? another.vX : 0;
+    this.vY = another ? another.vY : 0;
+    this.movementX = another ? another.movementX : 0;
+    this.movementY = another ? another.movementY : 0;
 
-    this.movableBodyInfo = {
-      state: BODY_POSITION_STATE.ON_SINGLE_TILE,
-      upBond: 0,
-      downBound: 0,
-      leftBound: 0,
-      rightBound: 0,
-      centerX: 0,
-      centerY: 0,
-    };
+    /**
+     * @type {{ state: number, upBond: number, downBound: number, leftBound: number, rightBound: number, centerX: number, centerY: number }}
+     */
+    this.movableBodyInfo = another ?
+      JSON.parse(JSON.stringify(another.movableBodyInfo)) :
+      {
+        state: BODY_POSITION_STATE.ON_SINGLE_TILE,
+        upBond: 0,
+        downBound: 0,
+        leftBound: 0,
+        rightBound: 0,
+        centerX: 0,
+        centerY: 0,
+      };
   }
 
   setVelocity(x, y) {
@@ -49,6 +58,13 @@ class PhysicalBody {
         x.getSizeY()
       );
     }
+
+    // console.log(this, x, y, sizeX, sizeY, (
+    //   !(this.posY + this.sizeY / 2 < y - sizeY / 2) &&
+    //   !(this.posY - this.sizeY / 2 > y + sizeY / 2) &&
+    //   !(this.posX + this.sizeX / 2 < x - sizeX / 2) &&
+    //   !(this.posX - this.sizeX / 2 > x + sizeX / 2)
+    // ));
 
     return (
       !(this.posY + this.sizeY / 2 < y - sizeY / 2) &&

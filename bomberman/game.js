@@ -2,12 +2,14 @@
 
 const path = require('path');
 
-const { Clock, Font } = require('sfml.js');
+const { Clock, Font, Keyboard, Mouse } = require('sfml.js');
 
 const Animator = require('./animator');
+const BombManager = require('./bomb_manager');
 const GUI = require('./gui');
 const Level = require('./level');
 const LevelView = require('./level_view');
+const PhysicsEngine = require('./physics_engine');
 const Player = require('./player');
 const TextureAtlas = require('./texture_atlas');
 
@@ -30,6 +32,8 @@ class Game {
     this.windowWidth = windowSize.x;
     this.windowHeight = windowSize.y;
 
+    this.physicsEngine = new PhysicsEngine();
+    this.bombManager = new BombManager();
     this.clock = new Clock();
     this.level = new Level();
     this.levelView = new LevelView();
@@ -58,6 +62,10 @@ class Game {
 
   async initGamePlay(lvlPath) {
     lvlPath = path.join(__dirname, lvlPath);
+
+    for (const player of this.players) {
+      player.deleteBomb();
+    }
 
     if (!(await this.level.loadFromFile(lvlPath))) {
       process.exit(4);
@@ -153,6 +161,9 @@ class Game {
 
     this.endOfGame = false;
     this.playAgain = false;
+
+    this.physicsEngine.init(this.level, this.players);
+    this.bombManager.init(this.level, this.players);
   }
 
   async init(musicVolumn, soundVolumn, numberOfLives) {
@@ -188,16 +199,70 @@ class Game {
     );
   }
 
+  processEvent() {
+    if (this.out.exit) return;
+    if (!this.endOfGame) {
+      const input = [
+        [ 0, 0 ],
+        [ 0, 0 ],
+      ];
+      if (Keyboard.isKeyPressed('Left')) {
+        input[1][0] = -1;
+      } else if (Keyboard.isKeyPressed('Right')) {
+        input[1][0] = 1;
+      }
+
+      if (Keyboard.isKeyPressed('Up')) {
+        input[1][1] = -1;
+      } else if (Keyboard.isKeyPressed('Down')) {
+        input[1][1] = 1;
+      }
+
+      if (Keyboard.isKeyPressed('A')) {
+        input[0][0] = -1;
+      } else if (Keyboard.isKeyPressed('D')) {
+        input[0][0] = 1;
+      }
+
+      if (Keyboard.isKeyPressed('W')) {
+        input[0][1] = -1;
+      } else if (Keyboard.isKeyPressed('S')) {
+        input[0][1] = 1;
+      }
+
+      for (let i = 0; i < input.length; i++) {
+        this.players[i].onMoveKeyPressed(input[i][0], input[i][1]);
+      }
+    }
+
+    let event;
+    while ((event = this.window.pollEvent())) {
+      // TODO: GUI
+
+      if (event.type === 'Closed') {
+        this.out.exit = true;
+        this.out.enterMenu = false;
+        break;
+      }
+
+      if (!this.endOfGame) {
+        if (event.type === 'KeyPressed' && event.key.codeStr === 'Space') {
+          this.players[1].onActionKeyPressed();
+        }
+
+        if (event.type === 'KeyPressed' && event.key.codeStr === 'LControl') {
+          this.players[0].onActionKeyPressed();
+        }
+
+        // TODO: Pause
+      }
+    }
+  }
+
   async run() {
     this.out.exit = false;
     while (!this.out.exit) {
-      let event;
-      while ((event = this.window.pollEvent())) {
-        if (event.type === 'Closed') {
-          return false;
-        }
-      }
-
+      this.processEvent();
       const dt = this.clock.getElapsedTime().asSeconds();
       await this.update(dt);
       this.clock.restart();
@@ -210,10 +275,30 @@ class Game {
   }
 
   update(dt) {
-    for (const player of this.players) {
+    this.physicsEngine.update(dt);
+
+    for (let i = 0; i < this.players.length; i++) {
+      const player = this.players[i];
       if (!this.endOfGame) {
         player.update(dt);
       }
+
+      if (!player.getIsAlive()) {
+        this.endOfGame = true;
+
+        if (!i) {
+          this.players[1].setWin(true);
+          break;
+        } else {
+          this.players[0].setWin(true);
+        }
+      }
+    }
+
+    this.bombManager.update(dt);
+
+    if (this.endOfGame && !this.out.exit) {
+      this.gui.updateStatsOutter(this.players, Mouse.getPosition(this.window).x, Mouse.getPosition(this.window).y, this.playAgain);
     }
   }
 

@@ -24,7 +24,7 @@ class Ray extends PhysicalBody {
     this.animator = animator;
     this.animator.setSprite(this.sprite);
     this.animator.setDelayBetweenFrames(0.1);
-    this.animator.shangeActiveState('explosion');
+    this.animator.changeActiveState('explosion');
   }
 
   getSide() {
@@ -37,9 +37,8 @@ class Ray extends PhysicalBody {
       new IntRect(0, 0, this.size * TILE_SIZE, TILE_SIZE)
     );
     this.sprite.setOrigin(0, this.sprite.getGlobalBounds().height / 2);
-    this.sprite.getTexture(); // ?
 
-    switch (this.size) {
+    switch (this.side) {
       case SIDE.UP: {
         this.sprite.setPosition(
           this.sprite.getPosition().x,
@@ -113,7 +112,7 @@ class Ray extends PhysicalBody {
   }
 
   update(/** dt */) {
-    // Empty
+    //
   }
 
   draw(window) {

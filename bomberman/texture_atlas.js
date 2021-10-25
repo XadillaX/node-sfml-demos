@@ -13,6 +13,7 @@ class TextureAtlas {
   async loadFromFile(filename) {
     try {
       this.texture = new Texture();
+      this.texture.setSmooth(true);
       await this.texture.loadFromFile(filename);
     } catch (e) {
       console.error(e);
