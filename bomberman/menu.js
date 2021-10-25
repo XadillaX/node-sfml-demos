@@ -80,7 +80,7 @@ class Menu {
       new Color(255, 255, 255)
     );
     this.playerSlider.setValue(0.4);
-    this.playerLives = 2;
+    this.playerLives = 3;
 
     this.volumnSlider = new Slider(
       'horizontal',

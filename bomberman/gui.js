@@ -104,10 +104,14 @@ class GUI {
     for (let i = 0; i < players.length; i++) {
       switch (i) {
         case 0:
-          this.playerOneLives.setString(`Player 1 Lives: ${players[i].getRespawnsCount()}`);
+          this.playerOneLives.setString(
+            `Player 1 Lives: ${players[i].getRespawnsCount()}`
+          );
           break;
         case 1:
-          this.playerSecondLives.setString(`Player 2 Lives: ${players[i].getRespawnsCount()}`);
+          this.playerSecondLives.setString(
+            `Player 2 Lives: ${players[i].getRespawnsCount()}`
+          );
           break;
         default:
           break;
@@ -131,34 +135,55 @@ class GUI {
 
   processEvent(mousePos, event) {
     if (this.endOfGameMenuView) {
-      if (event.type === 'MouseButtonReleased' && event.mouseButton.buttonStr === 'Left') {
+      if (
+        event.type === 'MouseButtonReleased' &&
+        event.mouseButton.buttonStr === 'Left'
+      ) {
         this.returnToMenuButton.update(mousePos, false);
         this.playAgainButton.update(mousePos, false);
         this.exitButton.update(mousePos, false);
 
-        if (this.returnToMenuButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+        if (
+          this.returnToMenuButton
+            .getSprite()
+            .getGlobalBounds()
+            .contains(mousePos.x, mousePos.y)
+        ) {
           this.out.playAgain = false;
           this.out.enterMenu = true;
           this.out.exit = true;
         }
 
-        if (this.playAgainButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+        if (
+          this.playAgainButton
+            .getSprite()
+            .getGlobalBounds()
+            .contains(mousePos.x, mousePos.y)
+        ) {
           this.out.playAgain = true;
           this.out.enterMenu = false;
           this.out.exit = false;
         }
 
-        if (this.exitButton.getSprite().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+        if (
+          this.exitButton
+            .getSprite()
+            .getGlobalBounds()
+            .contains(mousePos.x, mousePos.y)
+        ) {
           this.out.playAgain = false;
           this.out.enterMenu = false;
           this.out.exit = true;
         }
       }
 
-      if (event.type === 'MouseButtonPressed' && event.mouseButton.buttonStr === 'Left') {
+      if (
+        event.type === 'MouseButtonPressed' &&
+        event.mouseButton.buttonStr === 'Left'
+      ) {
         this.returnToMenuButton.update(mousePos, true);
         this.playAgainButton.update(mousePos, true);
-        this.exitButton(mousePos, true);
+        this.exitButton.update(mousePos, true);
       }
     }
   }

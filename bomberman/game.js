@@ -160,7 +160,7 @@ class Game {
     }
 
     this.endOfGame = false;
-    this.playAgain = false;
+    this.out.playAgain = false;
 
     this.physicsEngine.init(this.level, this.players);
     this.bombManager.init(this.level, this.players);
@@ -237,7 +237,7 @@ class Game {
 
     let event;
     while ((event = this.window.pollEvent())) {
-      // TODO: GUI
+      this.gui.processEvent(Mouse.getPosition(this.window), event);
 
       if (event.type === 'Closed') {
         this.out.exit = true;
@@ -274,7 +274,7 @@ class Game {
     return this.out.enterMenu;
   }
 
-  update(dt) {
+  async update(dt) {
     this.physicsEngine.update(dt);
 
     for (let i = 0; i < this.players.length; i++) {
@@ -298,7 +298,24 @@ class Game {
     this.bombManager.update(dt);
 
     if (this.endOfGame && !this.out.exit) {
-      this.gui.updateStatsOutter(this.players, Mouse.getPosition(this.window).x, Mouse.getPosition(this.window).y, this.playAgain);
+      this.gui.updateStatsOutter(
+        this.players,
+        Mouse.getPosition(this.window).x,
+        Mouse.getPosition(this.window).y,
+        this.out.playAgain,
+        this.out.exit,
+        this.out.enterMenu
+      );
+    } else {
+      this.gui.updateStats(
+        this.players,
+        Mouse.getPosition(this.window).x,
+        Mouse.getPosition(this.window).y
+      );
+    }
+
+    if (this.endOfGame && this.out.playAgain) {
+      await this.initGamePlay('data/sample_level.txt');
     }
   }
 
