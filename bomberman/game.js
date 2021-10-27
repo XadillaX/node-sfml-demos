@@ -8,6 +8,7 @@ const {
   Font,
   Keyboard,
   Mouse,
+  Music,
   RectangleShape,
   Sprite,
   Text,
@@ -37,6 +38,7 @@ const RESOURCE_PATHS = [
 class Game {
   constructor(window) {
     this.window = window;
+    this.music = new Music();
 
     const windowSize = window.getSize();
     this.windowWidth = windowSize.x;
@@ -183,7 +185,7 @@ class Game {
     );
     this.numberOfRespawns = numberOfLives;
 
-    this.font.loadFromFile(path.join(__dirname, RESOURCE_PATHS[1]));
+    await this.font.loadFromFile(path.join(__dirname, RESOURCE_PATHS[1]));
 
     for (let i = 0; i < this.atlases.length; i++) {
       const atlas = this.atlases[i];
@@ -199,6 +201,10 @@ class Game {
     }
     this.atlases[this.atlases.length - 1].trimByGrid(50, 42);
 
+    await this.music.openFromFile(path.join(__dirname, 'data/game.wav'));
+    this.music.setVolume(musicVolumn);
+    this.music.play();
+    this.music.setLoop(true);
     await this.initGamePlay(RESOURCE_PATHS[0]);
     await this.gui.init(
       this.font,
@@ -283,6 +289,7 @@ class Game {
       await new Promise(resolve => setImmediate(resolve));
     }
 
+    this.music.stop();
     return this.out.enterMenu;
   }
 

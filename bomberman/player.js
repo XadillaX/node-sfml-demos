@@ -1,8 +1,12 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const {
   Clock,
   Color,
+  Sound,
   Sprite,
   Time: { seconds },
   Vector2I,
@@ -31,6 +35,14 @@ class Player extends PhysicalBody {
     this.bombCollidingWithLevelCoords = new Vector2I(0, 0);
     this.sideBombCollidingWith = new Vector2I(0, 0);
     this.respawnPosition = new Vector2I(0, 0);
+
+    this.soundHit = new Sound(fs.readFileSync(path.join(__dirname, 'data/hurt.wav')));
+    this.soundPlant = new Sound(fs.readFileSync(path.join(__dirname, 'data/plant.wav')));
+  }
+
+  setVolume(volume) {
+    this.soundHit.setVolume(volume);
+    this.soundPlant.setVolume(volume);
   }
 
   setAnimator(animator, width, height) {
@@ -107,6 +119,9 @@ class Player extends PhysicalBody {
       parseInt(this.getPositionX() / TILE_SIZE),
       parseInt(this.getPositionY() / TILE_SIZE)
     );
+
+    this.bomb.setVolume(this.soundPlant.getVolume());
+    this.soundPlant.play();
   }
 
   setUpBomb(atlasBomb, atlasRay) {
@@ -317,6 +332,7 @@ class Player extends PhysicalBody {
     this.spawn();
     this.respawns--;
     this.respawnClock.restart();
+    this.soundHit.play();
   }
 }
 

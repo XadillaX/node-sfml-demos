@@ -1,8 +1,12 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const {
   Clock,
   Color,
+  Sound,
   Sprite,
   Time: { milliseconds },
   Vector2I,
@@ -51,6 +55,12 @@ class Bomb extends PhysicalBody {
     if (setColor) {
       this.sprite.setColor(new Color(243, 197, 48));
     }
+
+    this.explosionSound = new Sound(fs.readFileSync(path.join(__dirname, 'data/expl.wav')));
+  }
+
+  setVolume(volume) {
+    this.explosionSound.setVolume(volume);
   }
 
   draw(window) {
@@ -63,6 +73,7 @@ class Bomb extends PhysicalBody {
   }
 
   explode() {
+    this.explosionSound.play();
     for (let i = 0; i < this.rays.length; i++) {
       this.rays[i] = new Ray(i);
       const animator = new Animator();

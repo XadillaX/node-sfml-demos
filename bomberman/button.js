@@ -14,7 +14,7 @@ class Button {
     this.unpressTexture = new Texture();
 
     this.font = new Font();
-    this.font.loadFromFile(path.join(__dirname, 'data/ahronbd.ttf'));
+    this.font.loadFromFileSync(path.join(__dirname, 'data/ahronbd.ttf'));
     this.text = new Text(text, this.font);
     this.text.setFillColor(new Color(0, 107, 139, 0xff));
 

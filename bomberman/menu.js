@@ -8,6 +8,7 @@ const {
   Font,
   Keyboard,
   Mouse,
+  Music,
   RenderWindow,
   Sprite,
   Text,
@@ -42,7 +43,7 @@ class Menu {
     this.buttons = [];
 
     this.font = new Font();
-    this.font.loadFromFile(path.join(__dirname, 'data/micross.ttf'));
+    this.font.loadFromFileSync(path.join(__dirname, 'data/micross.ttf'));
     this.gameVersion = new Text('Public 1.0.1', this.font);
     this.gameVersion.setFillColor(new Color(32, 32, 32, 128));
     this.gameVersion.setScale(0.6, 0.6);
@@ -98,6 +99,12 @@ class Menu {
     );
     this.volumnSlider.setValue(0.6);
     this.volumn = 60;
+
+    this.music = new Music();
+    this.music.openFromFileSync(path.join(__dirname, 'data/menu.wav'));
+    this.music.setLoop(true);
+    this.music.setVolume(this.volumn);
+    this.music.play();
   }
 
   async init() {
@@ -203,7 +210,10 @@ class Menu {
 
   async run() {
     this.clock.restart();
-    if (this.exit) return;
+    if (this.exit) {
+      this.music.stop();
+      return;
+    }
 
     this.draw();
     await this.processEvents();
@@ -224,6 +234,7 @@ class Menu {
     } else if (this.volumn > 87) {
       this.volumn = 100;
     }
+    this.music.setVolume(this.volumn);
     this.optionsText[3].setString(`${this.volumn}%`);
 
     this.playerLives = this.playerSlider.getValue() * 5;
@@ -316,9 +327,11 @@ class Menu {
 
         if (this.buttons[0].getSprite().getGlobalBounds().contains(mouse)) {
           console.log('Start!');
+          this.music.stop();
           const game = new Game(this.window);
           await game.init(this.volumn, this.volumn, this.playerLives);
           this.exit = !(await game.run());
+          this.music.play();
           return;
         } else if (
           this.buttons[1].getSprite().getGlobalBounds().contains(mouse)
