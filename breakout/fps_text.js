@@ -6,16 +6,17 @@ const {
   Color,
   Font,
   Text,
+  Vector2f,
 } = require('sfml.js');
 
 class FPSText extends Text {
   constructor() {
     const font = new Font();
-    font.loadFromFile(path.join(__dirname, 'font.ttf'));
 
-    super('帧率：0', font, 20);
+    super({ string: '帧率：0', font, characterSize: 20 });
 
-    this.setPosition(10, 250);
+    this.fontLoaded = font.openFromFile(path.join(__dirname, 'font.ttf'));
+    this.setPosition(new Vector2f(10, 250));
     this.setFillColor(new Color(0xff, 0x78, 0x00, 0xff));
   }
 

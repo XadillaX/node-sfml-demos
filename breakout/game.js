@@ -8,6 +8,8 @@ const {
   RenderWindow,
   Sprite,
   Texture,
+  Vector2f,
+  Vector2u,
   VideoMode,
 } = require('sfml.js');
 
@@ -18,7 +20,8 @@ const FPSText = require('./fps_text');
 
 class Game {
   constructor() {
-    this.window = new RenderWindow(new VideoMode(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, 32), 'Breakout!', 5);
+    this.window = new RenderWindow(
+      new VideoMode(new Vector2u(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT), 32), 'Breakout!', { style: 5 });
     this.clock = new Clock();
   }
 
@@ -38,12 +41,14 @@ class Game {
       this.ball.init(),
       this.bricks.init(),
       this.board.init(),
+      this.fpsText.fontLoaded,
     ]);
 
     const backgroundTextureSize = this.backgroundTexture.getSize();
     this.background = new Sprite(this.backgroundTexture);
-    this.background.setScale(Game.WINDOW_WIDTH / backgroundTextureSize.x, Game.WINDOW_HEIGHT / backgroundTextureSize.y);
-    this.background.setPosition(0, 0);
+    this.background.setScale(
+      new Vector2f(Game.WINDOW_WIDTH / backgroundTextureSize.x, Game.WINDOW_HEIGHT / backgroundTextureSize.y));
+    this.background.setPosition(new Vector2f(0, 0));
 
     this.state = 'READY';
 
@@ -65,7 +70,7 @@ class Game {
 
   frame(deltaTime, events) {
     for (const event of events) {
-      switch (event.type) {
+      switch (event.kind) {
         case 'Closed': {
           this.window.close();
           break;
@@ -77,7 +82,7 @@ class Game {
       }
     }
 
-    if (Keyboard.isKeyPressed('Escape')) {
+    if (Keyboard.isKeyPressed(Keyboard.Key.Escape)) {
       this.window.close();
     }
 

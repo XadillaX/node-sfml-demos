@@ -1,6 +1,6 @@
 'use strict';
 
-const { Sprite } = require('sfml.js');
+const { Sprite, Vector2f } = require('sfml.js');
 
 // https://github.com/PiGames/Bomberman/blob/master/Bomberman/LevelView.cpp
 class LevelView {
@@ -11,10 +11,10 @@ class LevelView {
     for (let y = 0; y < level.getHeight(); y++) {
       const arr = [];
       for (let x = 0; x < level.getWidth(); x++) {
-        const sprite = new Sprite();
+        const sprite = new Sprite(atlas.texture);
         arr.push(sprite);
         atlas.setSpriteTextureByIndex(sprite, level.getTile(x, y));
-        sprite.setPosition(x * this.tileSize, y * this.tileSize);
+        sprite.setPosition(new Vector2f(x * this.tileSize, y * this.tileSize));
       }
 
       this.data.push(arr);

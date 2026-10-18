@@ -7,15 +7,15 @@ function usefulKeyStates() {
   let rightPressed = false;
   let spacePressed = false;
 
-  if (Keyboard.isKeyPressed('A') || Keyboard.isKeyPressed('Left')) {
+  if (Keyboard.isKeyPressed(Keyboard.Key.A) || Keyboard.isKeyPressed(Keyboard.Key.Left)) {
     leftPressed = true;
   }
 
-  if (Keyboard.isKeyPressed('D') || Keyboard.isKeyPressed('Right')) {
+  if (Keyboard.isKeyPressed(Keyboard.Key.D) || Keyboard.isKeyPressed(Keyboard.Key.Right)) {
     rightPressed = true;
   }
 
-  if (Keyboard.isKeyPressed('Space')) {
+  if (Keyboard.isKeyPressed(Keyboard.Key.Space)) {
     spacePressed = true;
   }
 

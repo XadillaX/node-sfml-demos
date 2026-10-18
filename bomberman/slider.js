@@ -1,6 +1,6 @@
 'use strict';
 
-const { Mouse, RectangleShape, Vector2F } = require('sfml.js');
+const { Mouse, RectangleShape, Vector2f } = require('sfml.js');
 
 // https://github.com/PiGames/Bomberman/blob/master/Bomberman/Slider.cpp
 class Slider {
@@ -25,34 +25,37 @@ class Slider {
     this.oldMousePositionY = 0;
     this.mouseButtonPressed = false;
 
-    this.belt = new RectangleShape({ x: 0, y: 0 });
-    this.slider = new RectangleShape({ x: 0, y: 0 });
-    this.sliderAfterGrasper = new RectangleShape({ x: 0, y: 0 });
-    this.grasper = new RectangleShape({ x: 0, y: 0 });
+    this.belt = new RectangleShape(new Vector2f(0, 0));
+    this.slider = new RectangleShape(new Vector2f(0, 0));
+    this.sliderAfterGrasper = new RectangleShape(new Vector2f(0, 0));
+    this.grasper = new RectangleShape(new Vector2f(0, 0));
 
     switch (orientation) {
       case 'horizontal': {
         this.belt.setPosition(beltBeginPosition);
-        this.belt.setSize(new Vector2F(beltLength, beltThickness));
+        this.belt.setSize(new Vector2f(beltLength, beltThickness));
 
         this.slider.setPosition(
-          sliderBeginXPosition,
-          beltBeginPosition.y + beltThickness / 2 - sliderThickness / 2
+          new Vector2f(
+            sliderBeginXPosition,
+            beltBeginPosition.y + beltThickness / 2 - sliderThickness / 2
+          )
         );
-        this.slider.setSize(new Vector2F(sliderLength, sliderThickness));
+        this.slider.setSize(new Vector2f(sliderLength, sliderThickness));
 
         this.grasper.setPosition(
-          sliderBeginXPosition,
-          this.slider.getPosition().y
+          new Vector2f(sliderBeginXPosition, this.slider.getPosition().y)
         );
-        this.grasper.setSize(new Vector2F(grasperThickness, sliderThickness));
+        this.grasper.setSize(new Vector2f(grasperThickness, sliderThickness));
 
         this.sliderAfterGrasper.setPosition(
-          sliderBeginXPosition,
-          beltBeginPosition.y + beltThickness / 2 - sliderThickness / 2
+          new Vector2f(
+            sliderBeginXPosition,
+            beltBeginPosition.y + beltThickness / 2 - sliderThickness / 2
+          )
         );
         this.sliderAfterGrasper.setSize(
-          new Vector2F(sliderLength, sliderThickness)
+          new Vector2f(sliderLength, sliderThickness)
         );
 
         break;
@@ -60,26 +63,29 @@ class Slider {
 
       case 'vertical': {
         this.belt.setPosition(beltBeginPosition);
-        this.belt.setSize(new Vector2F(beltThickness, beltLength));
+        this.belt.setSize(new Vector2f(beltThickness, beltLength));
 
         this.slider.setPosition(
-          beltBeginPosition.x + beltThickness / 2 - sliderThickness / 2,
-          sliderBeginXPosition
+          new Vector2f(
+            beltBeginPosition.x + beltThickness / 2 - sliderThickness / 2,
+            sliderBeginXPosition
+          )
         );
-        this.slider.setSize(new Vector2F(sliderThickness, sliderLength));
+        this.slider.setSize(new Vector2f(sliderThickness, sliderLength));
 
         this.grasper.setPosition(
-          this.slider.getPosition().x,
-          this.slider.getPosition().y
+          new Vector2f(this.slider.getPosition().x, this.slider.getPosition().y)
         );
-        this.grasper.setSize(Vector2F(sliderThickness, grasperThickness));
+        this.grasper.setSize(new Vector2f(sliderThickness, grasperThickness));
 
         this.sliderAfterGrasper.setPosition(
-          beltBeginPosition.x + beltThickness / 2 - sliderThickness / 2,
-          this.slider.getPosition().y
+          new Vector2f(
+            beltBeginPosition.x + beltThickness / 2 - sliderThickness / 2,
+            this.slider.getPosition().y
+          )
         );
         this.sliderAfterGrasper.setSize(
-          Vector2F(sliderThickness, sliderLength)
+          new Vector2f(sliderThickness, sliderLength)
         );
 
         break;
@@ -114,13 +120,15 @@ class Slider {
           this.slider.getPosition().x -
           this.grasper.getSize().x / 2 +
           this.slider.getSize().x * value;
-        this.grasper.setPosition(newX, this.grasper.getPosition().y);
+        this.grasper.setPosition(new Vector2f(newX, this.grasper.getPosition().y));
         this.sliderAfterGrasper.setPosition(
-          this.grasper.getPosition().x,
-          this.sliderAfterGrasper.getPosition().y
+          new Vector2f(
+            this.grasper.getPosition().x,
+            this.sliderAfterGrasper.getPosition().y
+          )
         );
         this.sliderAfterGrasper.setSize(
-          new Vector2F(
+          new Vector2f(
             this.sliderAfterGrasper.getSize().x -
               (this.grasper.getPosition().x - grasperOldXPos),
             this.sliderAfterGrasper.getSize().y
@@ -135,13 +143,15 @@ class Slider {
           this.slider.getPosition().y -
           this.grasper.getSize().y / 2 +
           this.slider.getSize().y * value;
-        this.grasper.setPosition(this.grasper.getPosition().x, newY);
+        this.grasper.setPosition(new Vector2f(this.grasper.getPosition().x, newY));
         this.sliderAfterGrasper.setPosition(
-          this.sliderAfterGrasper.getPosition().x,
-          this.grasper.getPosition().y
+          new Vector2f(
+            this.sliderAfterGrasper.getPosition().x,
+            this.grasper.getPosition().y
+          )
         );
         this.sliderAfterGrasper.setSize(
-          new Vector2F(
+          new Vector2f(
             this.sliderAfterGrasper.getSize().x,
             this.sliderAfterGrasper.getSize().y -
               (this.grasper.getPosition().y - grasperOldYPos)
@@ -160,53 +170,57 @@ class Slider {
   }
 
   update(mousePosI, event) {
-    const mousePos = new Vector2F(mousePosI.x, mousePosI.y);
+    const mousePos = new Vector2f(mousePosI.x, mousePosI.y);
     if (
       this.grasper.getGlobalBounds().contains(mousePos) ||
       this.mouseButtonPressed
     ) {
-      if (event.type === 'MouseButtonPressed') {
-        if (event.mouseButton.buttonStr === 'Left') {
+      if (event.kind === 'MouseButtonPressed') {
+        if (event.data.button === Mouse.Button.Left) {
           this.oldMousePositionX = mousePos.x;
           this.oldMousePositionY = mousePos.y;
           this.mouseButtonPressed = true;
         }
-      } else if (event.type === 'MouseButtonReleased') {
-        if (event.mouseButton.buttonStr === 'Left') {
+      } else if (event.kind === 'MouseButtonReleased') {
+        if (event.data.button === Mouse.Button.Left) {
           this.mouseButtonPressed = false;
         }
-      } else if (event.type === 'MouseMoved' && Mouse.isButtonPressed('Left')) {
+      } else if (event.kind === 'MouseMoved' && Mouse.isButtonPressed(Mouse.Button.Left)) {
         if (this.sliderOrient === 'horizontal') {
           if (
             this.grasper.getPosition().x +
-              event.mouseMove.x -
+              event.data.position.x -
               this.oldMousePositionX +
               this.grasper.getSize().x <=
               this.slider.getPosition().x + this.slider.getSize().x &&
             this.grasper.getPosition().x +
-              event.mouseMove.x -
+              event.data.position.x -
               this.oldMousePositionX >=
               this.slider.getPosition().x
           ) {
             const grasperOldXPos = this.grasper.getPosition().x;
             this.grasper.setPosition(
-              this.grasper.getPosition().x +
-                event.mouseMove.x -
-                this.oldMousePositionX,
-              this.grasper.getPosition().y
+              new Vector2f(
+                this.grasper.getPosition().x +
+                  event.data.position.x -
+                  this.oldMousePositionX,
+                this.grasper.getPosition().y
+              )
             );
             this.sliderAfterGrasper.setPosition(
-              this.grasper.getPosition().x,
-              this.sliderAfterGrasper.getPosition().y
+              new Vector2f(
+                this.grasper.getPosition().x,
+                this.sliderAfterGrasper.getPosition().y
+              )
             );
             this.sliderAfterGrasper.setSize(
-              new Vector2F(
+              new Vector2f(
                 this.sliderAfterGrasper.getSize().x -
                   (this.grasper.getPosition().x - grasperOldXPos),
                 this.sliderAfterGrasper.getSize().y
               )
             );
-            this.oldMousePositionX = event.mouseMove.x;
+            this.oldMousePositionX = event.data.position.x;
             this.value =
               (this.grasper.getPosition().x +
                 this.grasper.getSize().x / 2 -
@@ -216,34 +230,38 @@ class Slider {
         } else if (this.sliderOrient === 'vertical') {
           if (
             this.grasper.getPosition().y +
-              event.mouseMove.y -
+              event.data.position.y -
               this.oldMousePositionY +
               this.grasper.getSize().y <=
               this.slider.getPosition().y + this.slider.getSize().y &&
             this.grasper.getPosition().y +
-              event.mouseMove.y -
+              event.data.position.y -
               this.oldMousePositionY >=
               this.slider.getPosition().y
           ) {
             const grasperOldYPos = this.grasper.getPosition().y;
             this.grasper.setPosition(
-              this.grasper.getPosition().x,
-              this.grasper.getPosition().y +
-                event.mouseMove.y -
-                this.oldMousePositionY
+              new Vector2f(
+                this.grasper.getPosition().x,
+                this.grasper.getPosition().y +
+                  event.data.position.y -
+                  this.oldMousePositionY
+              )
             );
             this.sliderAfterGrasper.setPosition(
-              this.sliderAfterGrasper.getPosition().x,
-              this.grasper.getPosition().y
+              new Vector2f(
+                this.sliderAfterGrasper.getPosition().x,
+                this.grasper.getPosition().y
+              )
             );
             this.sliderAfterGrasper.setSize(
-              new Vector2F(
+              new Vector2f(
                 this.sliderAfterGrasper.getSize().x,
                 this.sliderAfterGrasper.getSize().y -
                   (this.grasper.getPosition().y - grasperOldYPos)
               )
             );
-            this.oldMousePositionY = event.mouseMove.y;
+            this.oldMousePositionY = event.data.position.y;
             this.value =
               (this.grasper.getPosition().y +
                 this.grasper.getSize().y / 2 -

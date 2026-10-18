@@ -5,6 +5,7 @@ const path = require('path');
 const _ = require('lodash');
 const {
   Clock,
+  Color,
   Font,
   IntRect,
   Keyboard,
@@ -12,6 +13,9 @@ const {
   Sprite,
   Text,
   Texture,
+  Vector2f,
+  Vector2i,
+  Vector2u,
   VideoMode,
 } = require('sfml.js');
 
@@ -19,10 +23,9 @@ const M = 20;
 const N = 10;
 
 const font = new Font();
-font.loadFromFile(path.join(__dirname, '../breakout/font.ttf'));
-const text = new Text('FPS: -', font, 15);
-text.setPosition(240, 20);
-text.setFillColor(0xff7800ff);
+const text = new Text({ string: 'FPS: -', font, characterSize: 15 });
+text.setPosition(new Vector2f(240, 20));
+text.setFillColor(new Color(0xff7800ff));
 
 const field = [];
 for (let i = 0; i < M; i++) {
@@ -49,15 +52,15 @@ for (let i = 0; i < 4; i++) {
   b.push({ x: 0, y: 0 });
 }
 
-const window = new RenderWindow(new VideoMode(320, 480, 32), 'The Game!');
+const window = new RenderWindow(new VideoMode(new Vector2u(320, 480), 32), 'The Game!');
 window.setFramerateLimit(120);
 window.setVerticalSyncEnabled(true);
 const t1 = new Texture();
 const t2 = new Texture();
 const t3 = new Texture();
-const s = new Sprite();
-const background = new Sprite();
-const frame = new Sprite();
+let s;
+let background;
+let frame;
 const clock = new Clock();
 
 let dx = 0;
@@ -68,14 +71,15 @@ let delay = 0.3;
 
 async function init() {
   await Promise.all([
+    font.openFromFile(path.join(__dirname, '../breakout/font.ttf')),
     t1.loadFromFile(path.join(__dirname, 'images/tiles.png')),
     t2.loadFromFile(path.join(__dirname, 'images/background.png')),
     t3.loadFromFile(path.join(__dirname, 'images/frame.png')),
   ]);
 
-  s.setTexture(t1);
-  background.setTexture(t2);
-  frame.setTexture(t3);
+  s = new Sprite(t1);
+  background = new Sprite(t2);
+  frame = new Sprite(t3);
 
   // first block
   colorNum = _.random(1, 7, false);
@@ -112,23 +116,23 @@ function loop() {
 
   let e;
   while ((e = window.pollEvent())) {
-    if (e.type === 'Closed') {
+    if (e.kind === 'Closed') {
       window.close();
       return;
     }
 
-    if (e.type === 'KeyPressed') {
-      if (e.key.codeStr === 'Up') {
+    if (e.kind === 'KeyPressed') {
+      if (e.data.code === Keyboard.Key.Up) {
         rotate = true;
-      } else if (e.key.codeStr === 'Left') {
+      } else if (e.data.code === Keyboard.Key.Left) {
         dx = -1;
-      } else if (e.key.codeStr === 'Right') {
+      } else if (e.data.code === Keyboard.Key.Right) {
         dx = 1;
       }
     }
   }
 
-  if (Keyboard.isKeyPressed('Down')) delay = 0.05;
+  if (Keyboard.isKeyPressed(Keyboard.Key.Down)) delay = 0.05;
 
   // Move
   for (let i = 0; i < 4; i++) {
@@ -199,21 +203,21 @@ function loop() {
   delay = 0.3;
 
   // Draw
-  window.clear(0xffffffff);
+  window.clear(new Color(0xffffffff));
   window.draw(background);
   for (let i = 0; i < M; i++) {
     for (let j = 0; j < N; j++) {
       if (field[i][j] === 0) continue;
 
-      s.setTextureRect(new IntRect(field[i][j] * 18, 0, 18, 18));
-      s.setPosition(28 + j * 18, 31 + i * 18);
+      s.setTextureRect(new IntRect(new Vector2i(field[i][j] * 18, 0), new Vector2i(18, 18)));
+      s.setPosition(new Vector2f(28 + j * 18, 31 + i * 18));
       window.draw(s);
     }
   }
 
   for (let i = 0; i < 4; i++) {
-    s.setTextureRect(new IntRect(colorNum * 18, 0, 18, 18));
-    s.setPosition(28 + a[i].x * 18, 31 + a[i].y * 18);
+    s.setTextureRect(new IntRect(new Vector2i(colorNum * 18, 0), new Vector2i(18, 18)));
+    s.setPosition(new Vector2f(28 + a[i].x * 18, 31 + a[i].y * 18));
     window.draw(s);
   }
 

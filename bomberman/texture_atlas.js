@@ -1,6 +1,6 @@
 'use strict';
 
-const { IntRect, Texture } = require('sfml.js');
+const { IntRect, Texture, Vector2i } = require('sfml.js');
 
 // https://github.com/PiGames/Bomberman/blob/master/Bomberman/TextureAtlas.cpp
 class TextureAtlas {
@@ -67,7 +67,9 @@ class TextureAtlas {
     const y = parseInt(index / this.rows) * this.cellHeight;
 
     sprite.setTexture(this.texture);
-    sprite.setTextureRect(new IntRect(x, y, this.cellWidth, this.cellHeight));
+    sprite.setTextureRect(
+      new IntRect(new Vector2i(x, y), new Vector2i(this.cellWidth, this.cellHeight))
+    );
   }
 }
 

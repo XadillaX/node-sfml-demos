@@ -1,5 +1,7 @@
 'use strict';
 
+const { Keyboard } = require('sfml.js');
+
 const BaseScene = require('./base');
 
 class DoneScene extends BaseScene {
@@ -11,7 +13,7 @@ class DoneScene extends BaseScene {
 
   frame(deltaTime, events) {
     for (const event of events) {
-      if (event.type === 'KeyReleased' && event.key.codeStr === 'Space') {
+      if (event.kind === 'KeyReleased' && event.data.code === Keyboard.Key.Space) {
         this.game.switchTo('ready_scene');
       }
     }

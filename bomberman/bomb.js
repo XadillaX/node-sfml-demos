@@ -1,15 +1,13 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-
 const {
   Clock,
   Color,
   Sound,
   Sprite,
-  Time: { milliseconds },
-  Vector2I,
+  milliseconds,
+  Vector2f,
+  Vector2i,
 } = require('sfml.js');
 
 const Animator = require('./animator');
@@ -29,12 +27,12 @@ const STATE = {
 
 // https://github.com/PiGames/Bomberman/blob/master/Bomberman/Bomb.cpp
 class Bomb extends PhysicalBody {
-  constructor(setColor) {
+  constructor(setColor, explosionSoundBuffer) {
     super();
 
     this.positionInTilesCoordsX = 0;
     this.positionInTilesCoordsY = 0;
-    this.direction = new Vector2I(0, 0);
+    this.direction = new Vector2i(0, 0);
 
     this.setColor = setColor;
     this.state = STATE.WAITING_FOR_EXPLOSION;
@@ -51,12 +49,9 @@ class Bomb extends PhysicalBody {
       this.rays.push(null);
     }
 
-    this.sprite = new Sprite();
-    if (setColor) {
-      this.sprite.setColor(new Color(243, 197, 48));
-    }
+    this.sprite = null;
 
-    this.explosionSound = new Sound(fs.readFileSync(path.join(__dirname, 'data/expl.wav')));
+    this.explosionSound = new Sound(explosionSoundBuffer);
   }
 
   setVolume(volume) {
@@ -83,7 +78,7 @@ class Bomb extends PhysicalBody {
         0,
         this.rayTextureAtlas.getCount() - 1
       );
-      this.rays[i].setAnimator(animator);
+      this.rays[i].setAnimator(animator, this.rayTextureAtlas.texture);
       this.rays[i].setPosition(this.getPositionX(), this.getPositionY());
       this.rays[i].setRaySpriteSize(this.getRaySizeAfterCollisions(i));
     }
@@ -118,7 +113,7 @@ class Bomb extends PhysicalBody {
 
   update(dt) {
     this.animator.animate(dt);
-    this.sprite.setPosition(this.getPositionX(), this.getPositionY());
+    this.sprite.setPosition(new Vector2f(this.getPositionX(), this.getPositionY()));
     this.positionInTilesCoordsX = parseInt(this.getPositionX() / TILE_SIZE);
     this.positionInTilesCoordsY = parseInt(this.getPositionY() / TILE_SIZE);
 
@@ -330,14 +325,20 @@ class Bomb extends PhysicalBody {
     return this.state;
   }
 
-  setAnimator(animator, width, height) {
+  setAnimator(animator, width, height, texture) {
     const w = width;
     const h = height;
+    if (!this.sprite) {
+      this.sprite = new Sprite(texture);
+      if (this.setColor) {
+        this.sprite.setColor(new Color(243, 197, 48));
+      }
+    }
     this.animator = animator;
     this.animator.setSprite(this.sprite);
     this.animator.setDelayBetweenFrames(1);
     this.animator.changeActiveState('waitingForExplosion');
-    this.sprite.setOrigin(w / 2, h / 2);
+    this.sprite.setOrigin(new Vector2f(w / 2, h / 2));
   }
 
   setDetonationTime(time) {

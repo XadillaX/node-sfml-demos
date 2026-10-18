@@ -3,16 +3,18 @@
 const path = require('path');
 
 const {
+  Color,
   RectangleShape,
   Sprite,
   Texture,
+  Vector2f,
 } = require('sfml.js');
 
 let Game;
 
 class Board extends RectangleShape {
   constructor() {
-    super({ x: Board.WIDTH, y: Board.HEIGHT });
+    super(new Vector2f(Board.WIDTH, Board.HEIGHT));
 
     if (!Game) Game = require('./game');
     this.speed = Game.WINDOW_WIDTH;
@@ -24,7 +26,7 @@ class Board extends RectangleShape {
     this.sprite = new Sprite(this.texture);
 
     const textureSize = this.texture.getSize();
-    this.sprite.setScale(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y);
+    this.sprite.setScale(new Vector2f(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y));
 
     this.reset();
   }
@@ -38,8 +40,8 @@ class Board extends RectangleShape {
     if (x < Board.WIDTH / 2) x = Board.WIDTH / 2;
     if (x > Game.WINDOW_WIDTH - (Board.WIDTH / 2)) x = Game.WINDOW_WIDTH - (Board.WIDTH / 2);
 
-    this.setPosition((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2);
-    this.sprite.setPosition((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2);
+    this.setPosition(new Vector2f((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2));
+    this.sprite.setPosition(new Vector2f((x - (Board.WIDTH / 2)), Board.Y_CENTER - Board.HEIGHT / 2));
     this.x = x;
   }
 
@@ -52,11 +54,11 @@ class Board extends RectangleShape {
   }
 
   setAvaiableColor() {
-    this.sprite.setColor(0xffffffff);
+    this.sprite.setColor(new Color(0xffffffff));
   }
 
   setDoneColor() {
-    this.sprite.setColor(0xff0000ff);
+    this.sprite.setColor(new Color(0xff0000ff));
   }
 
   render(window) {

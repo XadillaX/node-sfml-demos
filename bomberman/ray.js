@@ -1,6 +1,6 @@
 'use strict';
 
-const { IntRect, Sprite } = require('sfml.js');
+const { degrees, IntRect, Sprite, Vector2f, Vector2i } = require('sfml.js');
 const PhysicalBody = require('./physical_body');
 
 const TILE_SIZE = 64;
@@ -17,10 +17,11 @@ class Ray extends PhysicalBody {
     super();
 
     this.side = side;
-    this.sprite = new Sprite();
+    this.sprite = null;
   }
 
-  setAnimator(animator) {
+  setAnimator(animator, texture) {
+    if (!this.sprite) this.sprite = new Sprite(texture);
     this.animator = animator;
     this.animator.setSprite(this.sprite);
     this.animator.setDelayBetweenFrames(0.1);
@@ -34,17 +35,19 @@ class Ray extends PhysicalBody {
   setRaySpriteSize(size) {
     this.size = size;
     this.sprite.setTextureRect(
-      new IntRect(0, 0, this.size * TILE_SIZE, TILE_SIZE)
+      new IntRect(new Vector2i(0, 0), new Vector2i(this.size * TILE_SIZE, TILE_SIZE))
     );
-    this.sprite.setOrigin(0, this.sprite.getGlobalBounds().height / 2);
+    this.sprite.setOrigin(new Vector2f(0, this.sprite.getGlobalBounds().size.y / 2));
 
     switch (this.side) {
       case SIDE.UP: {
         this.sprite.setPosition(
-          this.sprite.getPosition().x,
-          this.sprite.getPosition().y - TILE_SIZE / 2
+          new Vector2f(
+            this.sprite.getPosition().x,
+            this.sprite.getPosition().y - TILE_SIZE / 2
+          )
         );
-        this.sprite.setRotation(270);
+        this.sprite.setRotation(degrees(270));
         this.setSize(TILE_SIZE, TILE_SIZE * size + TILE_SIZE);
         this.setPositionY(
           parseInt(this.getPositionY() / TILE_SIZE) * TILE_SIZE
@@ -60,10 +63,12 @@ class Ray extends PhysicalBody {
           parseInt(this.getPositionY() / TILE_SIZE) * TILE_SIZE
         );
         this.sprite.setPosition(
-          this.sprite.getPosition().x,
-          this.sprite.getPosition().y + TILE_SIZE / 2
+          new Vector2f(
+            this.sprite.getPosition().x,
+            this.sprite.getPosition().y + TILE_SIZE / 2
+          )
         );
-        this.sprite.setRotation(90);
+        this.sprite.setRotation(degrees(90));
         this.setSize(TILE_SIZE, TILE_SIZE * size);
         this.setPositionY(
           this.getPositionY() + TILE_SIZE + (TILE_SIZE * size) / 2
@@ -76,10 +81,12 @@ class Ray extends PhysicalBody {
           parseInt(this.getPositionX() / TILE_SIZE) * TILE_SIZE
         );
         this.sprite.setPosition(
-          this.sprite.getPosition().x - TILE_SIZE / 2,
-          this.sprite.getPosition().y
+          new Vector2f(
+            this.sprite.getPosition().x - TILE_SIZE / 2,
+            this.sprite.getPosition().y
+          )
         );
-        this.sprite.setRotation(180);
+        this.sprite.setRotation(degrees(180));
         this.setSize(TILE_SIZE * size, TILE_SIZE);
         this.setPositionX(this.getPositionX() - (TILE_SIZE * size) / 2);
         break;
@@ -90,8 +97,10 @@ class Ray extends PhysicalBody {
           parseInt(this.getPositionX() / TILE_SIZE) * TILE_SIZE
         );
         this.sprite.setPosition(
-          this.sprite.getPosition().x + TILE_SIZE / 2,
-          this.sprite.getPosition().y
+          new Vector2f(
+            this.sprite.getPosition().x + TILE_SIZE / 2,
+            this.sprite.getPosition().y
+          )
         );
         this.setSize(TILE_SIZE * size, TILE_SIZE);
         this.setPositionX(
@@ -106,7 +115,7 @@ class Ray extends PhysicalBody {
   }
 
   setPosition(x, y) {
-    this.sprite.setPosition(x, y);
+    this.sprite.setPosition(new Vector2f(x, y));
     this.setPositionX(x);
     this.setPositionY(y);
   }

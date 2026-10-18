@@ -4,9 +4,10 @@ const path = require('path');
 
 const {
   CircleShape,
+  Color,
   Sprite,
   Texture,
-  Vector2F,
+  Vector2f,
 } = require('sfml.js');
 
 const Board = require('./board');
@@ -15,7 +16,7 @@ let Game;
 
 class Ball extends CircleShape {
   constructor() {
-    super(Ball.RADIUS);
+    super({ radius: Ball.RADIUS });
 
     if (!Game) Game = require('./game');
 
@@ -28,27 +29,27 @@ class Ball extends CircleShape {
     this.sprite = new Sprite(this.texture);
 
     const textureSize = this.texture.getSize();
-    this.sprite.setScale(Ball.RADIUS * 2 / textureSize.x, Ball.RADIUS * 2 / textureSize.y);
+    this.sprite.setScale(new Vector2f(Ball.RADIUS * 2 / textureSize.x, Ball.RADIUS * 2 / textureSize.y));
 
     this.reset();
   }
 
   reset() {
-    this.moveVector = new Vector2F(0, 0);
-    this.moveTo(new Vector2F(Game.WINDOW_WIDTH / 2, Ball.ORIG_Y));
+    this.moveVector = new Vector2f(0, 0);
+    this.moveTo(new Vector2f(Game.WINDOW_WIDTH / 2, Ball.ORIG_Y));
     this.setAvaiableColor();
   }
 
   moveTo(vec) {
     this.center = vec;
-    this.pos = new Vector2F(this.center.x - Ball.RADIUS, this.center.y - Ball.RADIUS);
+    this.pos = new Vector2f(this.center.x - Ball.RADIUS, this.center.y - Ball.RADIUS);
     this.sprite.setPosition(this.pos);
     this.setPosition(this.pos);
     this.bounds = this.getLocalBounds();
   }
 
   setDoneColor() {
-    this.sprite.setColor(0xff0000ff);
+    this.sprite.setColor(new Color(0xff0000ff));
   }
 
   normalFly(game, deltaTimeSeconds, board) {
@@ -80,11 +81,11 @@ class Ball extends CircleShape {
       game.switchTo('done_scene');
     }
 
-    this.moveTo(new Vector2F(x, y));
+    this.moveTo(new Vector2f(x, y));
   }
 
   setAvaiableColor() {
-    this.sprite.setColor(0xffffffff);
+    this.sprite.setColor(new Color(0xffffffff));
   }
 
   render(window) {

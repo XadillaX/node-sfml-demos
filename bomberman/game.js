@@ -13,6 +13,8 @@ const {
   Sprite,
   Text,
   Texture,
+  Vector2f,
+  Vector2u,
 } = require('sfml.js');
 
 const Animator = require('./animator');
@@ -140,12 +142,13 @@ class Game {
       this.players[i].setAnimator(
         this.playersAnimators[i],
         this.atlases[3].getCellSizeX(),
-        this.atlases[3].getCellSizeY() - 5
+        this.atlases[3].getCellSizeY() - 5,
+        this.atlases[3].texture
       );
       this.playersAnimators[i].stop();
       this.playersAnimators[i].setDelayBetweenFrames(0.1);
       this.players[i].setRespawns(3);
-      this.players[i].setUpBomb(this.atlases[1], this.atlases[2]);
+      await this.players[i].setUpBomb(this.atlases[1], this.atlases[2]);
       this.players[i].setLevel(this.level);
 
       if (!i) {
@@ -185,7 +188,7 @@ class Game {
     );
     this.numberOfRespawns = numberOfLives;
 
-    await this.font.loadFromFile(path.join(__dirname, RESOURCE_PATHS[1]));
+    await this.font.openFromFile(path.join(__dirname, RESOURCE_PATHS[1]));
 
     for (let i = 0; i < this.atlases.length; i++) {
       const atlas = this.atlases[i];
@@ -204,7 +207,7 @@ class Game {
     await this.music.openFromFile(path.join(__dirname, 'data/game.wav'));
     this.music.setVolume(musicVolumn);
     this.music.play();
-    this.music.setLoop(true);
+    this.music.setLooping(true);
     await this.initGamePlay(RESOURCE_PATHS[0]);
     await this.gui.init(
       this.font,
@@ -222,27 +225,27 @@ class Game {
         [ 0, 0 ],
         [ 0, 0 ],
       ];
-      if (Keyboard.isKeyPressed('Left')) {
+      if (Keyboard.isKeyPressed(Keyboard.Key.Left)) {
         input[1][0] = -1;
-      } else if (Keyboard.isKeyPressed('Right')) {
+      } else if (Keyboard.isKeyPressed(Keyboard.Key.Right)) {
         input[1][0] = 1;
       }
 
-      if (Keyboard.isKeyPressed('Up')) {
+      if (Keyboard.isKeyPressed(Keyboard.Key.Up)) {
         input[1][1] = -1;
-      } else if (Keyboard.isKeyPressed('Down')) {
+      } else if (Keyboard.isKeyPressed(Keyboard.Key.Down)) {
         input[1][1] = 1;
       }
 
-      if (Keyboard.isKeyPressed('A')) {
+      if (Keyboard.isKeyPressed(Keyboard.Key.A)) {
         input[0][0] = -1;
-      } else if (Keyboard.isKeyPressed('D')) {
+      } else if (Keyboard.isKeyPressed(Keyboard.Key.D)) {
         input[0][0] = 1;
       }
 
-      if (Keyboard.isKeyPressed('W')) {
+      if (Keyboard.isKeyPressed(Keyboard.Key.W)) {
         input[0][1] = -1;
-      } else if (Keyboard.isKeyPressed('S')) {
+      } else if (Keyboard.isKeyPressed(Keyboard.Key.S)) {
         input[0][1] = 1;
       }
 
@@ -255,22 +258,22 @@ class Game {
     while ((event = this.window.pollEvent())) {
       this.gui.processEvent(Mouse.getPosition(this.window), event);
 
-      if (event.type === 'Closed') {
+      if (event.kind === 'Closed') {
         this.out.exit = true;
         this.out.enterMenu = false;
         break;
       }
 
       if (!this.endOfGame) {
-        if (event.type === 'KeyPressed' && event.key.codeStr === 'Space') {
+        if (event.kind === 'KeyPressed' && event.data.code === Keyboard.Key.Space) {
           this.players[1].onActionKeyPressed();
         }
 
-        if (event.type === 'KeyPressed' && event.key.codeStr === 'LControl') {
+        if (event.kind === 'KeyPressed' && event.data.code === Keyboard.Key.LControl) {
           this.players[0].onActionKeyPressed();
         }
 
-        if (event.type === 'KeyPressed' && event.key.codeStr === 'Escape') {
+        if (event.kind === 'KeyPressed' && event.data.code === Keyboard.Key.Escape) {
           this._pause = true;
         }
       }
@@ -355,31 +358,31 @@ class Game {
   }
 
   pause() {
-    const scrn = this.window.capture();
     const scrnTexture = new Texture();
-    scrnTexture.create(this.windowWidth, this.windowHeight);
-    scrnTexture.update(scrn);
+    scrnTexture.resize(new Vector2u(this.windowWidth, this.windowHeight));
+    scrnTexture.update(this.window);
     const sprite = new Sprite(scrnTexture);
-    const filter = new RectangleShape({
-      x: this.windowWidth,
-      y: this.windowHeight,
-    });
+    const filter = new RectangleShape(
+      new Vector2f(this.windowWidth, this.windowHeight)
+    );
     filter.setFillColor(new Color(255, 255, 255, 155));
 
-    const pauseText = new Text('PAUSED', this.font, 25);
+    const pauseText = new Text({ font: this.font, string: 'PAUSED', characterSize: 25 });
     pauseText.setFillColor(new Color(247, 148, 142));
     pauseText.setPosition(
-      this.windowWidth / 2 - pauseText.getGlobalBounds().width / 2,
-      this.windowHeight / 2);
+      new Vector2f(
+        this.windowWidth / 2 - pauseText.getGlobalBounds().size.x / 2,
+        this.windowHeight / 2
+      ));
 
     let event;
     while (this._pause && !this.endOfGame && !this.out.exit) {
       while ((event = this.window.pollEvent())) {
-        if (event.type === 'KeyPressed' && event.key.codeStr === 'Escape') {
+        if (event.kind === 'KeyPressed' && event.data.code === Keyboard.Key.Escape) {
           this._pause = false;
         }
 
-        if (event.type === 'Closed') {
+        if (event.kind === 'Closed') {
           this.out.exit = true;
         }
       }

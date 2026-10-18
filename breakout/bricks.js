@@ -7,7 +7,9 @@ const {
   RectangleShape,
   Sprite,
   Texture,
-  Vector2F,
+  Vector2f,
+  add,
+  subtract,
 } = require('sfml.js');
 
 const Ball = require('./ball');
@@ -17,11 +19,11 @@ const textures = [];
 
 class Brick extends RectangleShape {
   constructor(pos) {
-    super({ x: Board.WIDTH, y: Board.HEIGHT });
-    this.pos = new Vector2F(pos.x, pos.y);
+    super(new Vector2f(Board.WIDTH, Board.HEIGHT));
+    this.pos = new Vector2f(pos.x, pos.y);
     this.setPosition(this.pos);
-    this.center = Vector2F.add(this.pos, Brick.HALF_SIZE_VECTOR);
-    this.centerToRightTopVector = Vector2F.subtract(this.pos, this.center);
+    this.center = add(this.pos, Brick.HALF_SIZE_VECTOR);
+    this.centerToRightTopVector = subtract(this.pos, this.center);
     this.centerToRightTopVector.x = Math.abs(this.centerToRightTopVector.x);
     this.centerToRightTopVector.y = Math.abs(this.centerToRightTopVector.y);
     this.bounds = this.getGlobalBounds();
@@ -32,7 +34,7 @@ class Brick extends RectangleShape {
     const texture = textures[_.random(0, 4, false)];
     const textureSize = texture.getSize();
     this.sprite = new Sprite(texture);
-    this.sprite.setScale(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y);
+    this.sprite.setScale(new Vector2f(Board.WIDTH / textureSize.x, Board.HEIGHT / textureSize.y));
     this.sprite.setPosition(this.pos);
     this.display = true;
   }
@@ -50,11 +52,11 @@ class Brick extends RectangleShape {
     const c = this.pos;
     const h = this.centerToRightTopVector;
 
-    const v = Vector2F.subtract(p, c);
+    const v = subtract(p, c);
     v.x = Math.abs(v.x);
     v.y = Math.abs(v.y);
 
-    const u = Vector2F.subtract(v, h);
+    const u = subtract(v, h);
     if (u.x < 0) u.x = 0;
     if (u.y < 0) u.y = 0;
 
@@ -65,7 +67,7 @@ class Brick extends RectangleShape {
     const { x, y } = ball.pos;
     const pointCount = ball.getPointCount();
     const { bounds } = this;
-    const { width: boundsX, height: boundsY } = ball.bounds;
+    const { x: boundsX, y: boundsY } = ball.bounds.size;
     for (let i = 0; i < pointCount; i++) {
       const point = ball.getPoint(i);
       const { x: pointX, y: pointY } = point;
@@ -103,7 +105,7 @@ class Brick extends RectangleShape {
   }
 }
 
-Brick.HALF_SIZE_VECTOR = new Vector2F(Board.WIDTH / 2, Board.HEIGHT / 2);
+Brick.HALF_SIZE_VECTOR = new Vector2f(Board.WIDTH / 2, Board.HEIGHT / 2);
 
 class Bricks {
   async init() {

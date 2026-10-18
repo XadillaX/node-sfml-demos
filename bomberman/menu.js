@@ -11,10 +11,12 @@ const {
   Music,
   RenderWindow,
   Sprite,
+  Style,
   Text,
   Texture,
-  Vector2F,
-  Vector2I,
+  Vector2f,
+  Vector2i,
+  Vector2u,
   VideoMode,
 } = require('sfml.js');
 
@@ -30,9 +32,9 @@ class Menu {
     this.windowHeight = height;
 
     this.window = new RenderWindow(
-      new VideoMode(width, height, 32),
+      new VideoMode(new Vector2u(width, height), 32),
       'Bomberman',
-      RenderWindow.Style.Close
+      { style: Style.Close }
     );
     this.window.setFramerateLimit(60);
 
@@ -43,14 +45,13 @@ class Menu {
     this.buttons = [];
 
     this.font = new Font();
-    this.font.loadFromFileSync(path.join(__dirname, 'data/micross.ttf'));
-    this.gameVersion = new Text('Public 1.0.1', this.font);
+    this.gameVersion = new Text({ font: this.font, string: 'Public 1.0.1' });
     this.gameVersion.setFillColor(new Color(32, 32, 32, 128));
-    this.gameVersion.setScale(0.6, 0.6);
+    this.gameVersion.setScale(new Vector2f(0.6, 0.6));
 
     this.optionsText = [];
     for (let i = 0; i < 4; i++) {
-      const text = new Text(' ', this.font, 25);
+      const text = new Text({ font: this.font, string: ' ', characterSize: 25 });
       this.optionsText.push(text);
       text.setFillColor(new Color(0, 107, 139));
       text.setStyle(Text.Style.Bold);
@@ -61,14 +62,14 @@ class Menu {
     this.optionsText[1].setString('VOLUME LEVEL:');
     this.optionsText[3].setString('60%');
 
-    this.optionsText[0].setPosition(160, 180);
-    this.optionsText[2].setPosition(400, 180);
-    this.optionsText[1].setPosition(160, 260);
-    this.optionsText[3].setPosition(385, 260);
+    this.optionsText[0].setPosition(new Vector2f(160, 180));
+    this.optionsText[2].setPosition(new Vector2f(400, 180));
+    this.optionsText[1].setPosition(new Vector2f(160, 260));
+    this.optionsText[3].setPosition(new Vector2f(385, 260));
 
     this.playerSlider = new Slider(
       'horizontal',
-      new Vector2F(460, 180),
+      new Vector2f(460, 180),
       100,
       30,
       470,
@@ -85,7 +86,7 @@ class Menu {
 
     this.volumnSlider = new Slider(
       'horizontal',
-      new Vector2F(460, 260),
+      new Vector2f(460, 260),
       100,
       30,
       470,
@@ -101,52 +102,50 @@ class Menu {
     this.volumn = 60;
 
     this.music = new Music();
-    this.music.openFromFileSync(path.join(__dirname, 'data/menu.wav'));
-    this.music.setLoop(true);
-    this.music.setVolume(this.volumn);
-    this.music.play();
   }
 
   async init() {
+    await this.font.openFromFile(path.join(__dirname, 'data/micross.ttf'));
+
     this.buttons = [
       new Button(
-        new Vector2F(this.windowWidth / 2 - 150, this.windowHeight / 2.3 - 50),
-        new Vector2I(300, 75),
+        new Vector2f(this.windowWidth / 2 - 150, this.windowHeight / 2.3 - 50),
+        new Vector2i(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
         'START'
       ),
       new Button(
-        new Vector2F(this.windowWidth / 2 - 150, this.windowHeight / 1.7 - 50),
-        new Vector2I(300, 75),
+        new Vector2f(this.windowWidth / 2 - 150, this.windowHeight / 1.7 - 50),
+        new Vector2i(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
         'OPTIONS'
       ),
       new Button(
-        new Vector2F(
+        new Vector2f(
           this.windowWidth / 2 - 150,
           this.windowHeight / 1.7 + 100 - 50
         ),
-        new Vector2I(300, 75),
+        new Vector2i(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
         'CREDITS'
       ),
       new Button(
-        new Vector2F(
+        new Vector2f(
           this.windowWidth / 2 - 150,
           this.windowHeight / 1.7 + 200 - 50
         ),
-        new Vector2I(300, 75),
+        new Vector2i(300, 75),
         'data/pressButton.png',
         'data/unpressButton.png',
         'EXIT'
       ),
     ];
     this.optionReturnButton = new Button(
-      new Vector2F(25, this.windowHeight - 100),
-      new Vector2I(300, 75),
+      new Vector2f(25, this.windowHeight - 100),
+      new Vector2i(300, 75),
       'data/pressButton.png',
       'data/unpressButton.png',
       'RETURN TO MENU'
@@ -159,7 +158,7 @@ class Menu {
     await texture.loadFromFile(path.join(__dirname, 'data/menuBackground.png'));
     this.backgroundSprite = new Sprite(texture);
     this.backgroundSprite.setScale(
-      new Vector2F(
+      new Vector2f(
         this.windowWidth / texture.getSize().x,
         this.windowHeight / texture.getSize().y
       )
@@ -170,7 +169,7 @@ class Menu {
     texture.setSmooth(true);
     this.pigamesLogoSprite = new Sprite(texture);
     this.pigamesLogoSprite.setScale(
-      new Vector2F(
+      new Vector2f(
         this.windowHeight / texture.getSize().y / 8,
         this.windowHeight / texture.getSize().y / 8
       )
@@ -181,13 +180,13 @@ class Menu {
     texture.setSmooth(true);
     this.gameLogoSprite = new Sprite(texture);
     this.gameLogoSprite.setScale(
-      new Vector2F(
+      new Vector2f(
         this.windowHeight / texture.getSize().y / 7,
         this.windowHeight / texture.getSize().y / 7
       )
     );
     this.gameLogoSprite.setPosition(
-      new Vector2F(
+      new Vector2f(
         this.windowWidth / 2 -
           (texture.getSize().x * this.gameLogoSprite.getScale().x) / 2,
         this.windowHeight / 5 - 30
@@ -196,16 +195,23 @@ class Menu {
 
     const textRect = this.gameVersion.getLocalBounds();
     this.gameVersion.setPosition(
-      this.gameLogoSprite.getPosition().x +
-        texture.getSize().x * this.gameLogoSprite.getScale().x -
-        textRect.width * 0.8,
-      this.gameLogoSprite.getPosition().y +
-        texture.getSize().y * this.gameLogoSprite.getScale().y
+      new Vector2f(
+        this.gameLogoSprite.getPosition().x +
+          texture.getSize().x * this.gameLogoSprite.getScale().x -
+          textRect.size.x * 0.8,
+        this.gameLogoSprite.getPosition().y +
+          texture.getSize().y * this.gameLogoSprite.getScale().y
+      )
     );
 
     texture = new Texture();
     await texture.loadFromFile(path.join(__dirname, 'data/credits.png'));
     this.creditsSprite = new Sprite(texture);
+
+    await this.music.openFromFile(path.join(__dirname, 'data/menu.wav'));
+    this.music.setLooping(true);
+    this.music.setVolume(this.volumn);
+    this.music.play();
   }
 
   async run() {
@@ -251,7 +257,7 @@ class Menu {
   }
 
   draw() {
-    this.window.clear(0xffffffff);
+    this.window.clear(new Color(0xffffffff));
     this.window.draw(this.backgroundSprite);
 
     if (this.credits) {
@@ -289,10 +295,10 @@ class Menu {
   async processEvents() {
     let event;
     const mouseI = Mouse.getPosition(this.window);
-    const mouse = new Vector2F(mouseI.x, mouseI.y);
+    const mouse = new Vector2f(mouseI.x, mouseI.y);
 
     while ((event = this.window.pollEvent())) {
-      if (event.type === 'Closed') {
+      if (event.kind === 'Closed') {
         this.exit = true;
         break;
       }
@@ -302,8 +308,8 @@ class Menu {
         this.volumnSlider.update(Mouse.getPosition(this.window), event);
 
         if (
-          event.type === 'MouseButtonReleased' &&
-          event.mouseButton.buttonStr === 'Left' &&
+          event.kind === 'MouseButtonReleased' &&
+          event.data.button === Mouse.Button.Left &&
           !this.credits
         ) {
           this.optionReturnButton.update(Mouse.getPosition(this.window), false);
@@ -317,8 +323,8 @@ class Menu {
           }
         }
       } else if (
-        event.type === 'MouseButtonReleased' &&
-        event.mouseButton.buttonStr === 'Left' &&
+        event.kind === 'MouseButtonReleased' &&
+        event.data.button === Mouse.Button.Left &&
         !this.credits
       ) {
         for (const button of this.buttons) {
@@ -349,8 +355,8 @@ class Menu {
       }
 
       if (
-        event.type === 'MouseButtonPressed' &&
-        event.mouseButton.buttonStr === 'Left' &&
+        event.kind === 'MouseButtonPressed' &&
+        event.data.button === Mouse.Button.Left &&
         !this.credits
       ) {
         if (this._options) {
@@ -364,13 +370,13 @@ class Menu {
       }
 
       if (this.credits) {
-        if (event.type === 'KeyPressed') {
+        if (event.kind === 'KeyPressed') {
           this.credits = false;
         }
       }
 
       if (this._options) {
-        if (Keyboard.isKeyPressed('Escape')) {
+        if (Keyboard.isKeyPressed(Keyboard.Key.Escape)) {
           this._options = false;
         }
       }

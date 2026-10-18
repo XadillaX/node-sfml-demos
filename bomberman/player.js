@@ -1,15 +1,16 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
 
 const {
   Clock,
   Color,
   Sound,
+  SoundBuffer,
   Sprite,
-  Time: { seconds },
-  Vector2I,
+  seconds,
+  Vector2f,
+  Vector2i,
 } = require('sfml.js');
 
 const Animator = require('./animator');
@@ -28,16 +29,16 @@ class Player extends PhysicalBody {
     this.isAlive = true;
     this.bomb = null;
     this.canBeDamaged = true;
-    this.sprite = new Sprite();
+    this.sprite = null;
     this.respawnSafeTime = seconds(0);
     this.respawnClock = new Clock();
 
-    this.bombCollidingWithLevelCoords = new Vector2I(0, 0);
-    this.sideBombCollidingWith = new Vector2I(0, 0);
-    this.respawnPosition = new Vector2I(0, 0);
+    this.bombCollidingWithLevelCoords = new Vector2i(0, 0);
+    this.sideBombCollidingWith = new Vector2i(0, 0);
+    this.respawnPosition = new Vector2i(0, 0);
 
-    this.soundHit = new Sound(fs.readFileSync(path.join(__dirname, 'data/hurt.wav')));
-    this.soundPlant = new Sound(fs.readFileSync(path.join(__dirname, 'data/plant.wav')));
+    this.soundHit = null;
+    this.soundPlant = null;
   }
 
   setVolume(volume) {
@@ -45,12 +46,13 @@ class Player extends PhysicalBody {
     this.soundPlant.setVolume(volume);
   }
 
-  setAnimator(animator, width, height) {
-    this.sprite.setOrigin(width / 2, height / 2);
+  setAnimator(animator, width, height, texture) {
+    if (!this.sprite) this.sprite = new Sprite(texture);
+    this.sprite.setOrigin(new Vector2f(width / 2, height / 2));
     this.setSize(width, height);
     this.animator = animator;
     this.animator.setSprite(this.sprite);
-    this.sprite.setPosition(3 * TILE_SIZE + width, 5 * TILE_SIZE + height);
+    this.sprite.setPosition(new Vector2f(3 * TILE_SIZE + width, 5 * TILE_SIZE + height));
   }
 
   setRespawns(hp) {
@@ -93,9 +95,9 @@ class Player extends PhysicalBody {
     if (this.bomb !== null) return;
 
     if (this.sprite.getColor().toInteger() !== 0xffffffff) {
-      this.bomb = new Bomb(true);
+      this.bomb = new Bomb(true, this.explosionSoundBuffer);
     } else {
-      this.bomb = new Bomb();
+      this.bomb = new Bomb(false, this.explosionSoundBuffer);
     }
 
     this.bombAnimator = new Animator();
@@ -108,7 +110,8 @@ class Player extends PhysicalBody {
     this.bomb.setAnimator(
       this.bombAnimator,
       this.bombTextureAtlas.getCellSizeX(),
-      this.bombTextureAtlas.getCellSizeY()
+      this.bombTextureAtlas.getCellSizeY(),
+      this.bombTextureAtlas.texture
     );
     this.bomb.setUpRay(this.bombRayTextureAtlas);
     this.bomb.setDetonationTime(seconds(3.108));
@@ -124,9 +127,22 @@ class Player extends PhysicalBody {
     this.soundPlant.play();
   }
 
-  setUpBomb(atlasBomb, atlasRay) {
+  async setUpBomb(atlasBomb, atlasRay) {
     this.bombTextureAtlas = atlasBomb;
     this.bombRayTextureAtlas = atlasRay;
+
+    if (!this.soundHit) {
+      const soundHitBuffer = new SoundBuffer();
+      const soundPlantBuffer = new SoundBuffer();
+      this.explosionSoundBuffer = new SoundBuffer();
+      await Promise.all([
+        soundHitBuffer.loadFromFile(path.join(__dirname, 'data/hurt.wav')),
+        soundPlantBuffer.loadFromFile(path.join(__dirname, 'data/plant.wav')),
+        this.explosionSoundBuffer.loadFromFile(path.join(__dirname, 'data/expl.wav')),
+      ]);
+      this.soundHit = new Sound(soundHitBuffer);
+      this.soundPlant = new Sound(soundPlantBuffer);
+    }
   }
 
   setLevel(level) {
@@ -143,7 +159,7 @@ class Player extends PhysicalBody {
     this.managePlayersTextureDirection();
     this.setPositionX(this.getPositionX() + this.movementX);
     this.setPositionY(this.getPositionY() + this.movementY);
-    this.sprite.setPosition(this.getPositionX(), this.getPositionY());
+    this.sprite.setPosition(new Vector2f(this.getPositionX(), this.getPositionY()));
 
     if (this.bomb !== null) {
       this.bomb.update(dt);
@@ -280,24 +296,24 @@ class Player extends PhysicalBody {
   }
 
   getSideBombCollidingWith() {
-    return new Vector2I(this.sideBombCollidingWith);
+    return new Vector2i(this.sideBombCollidingWith);
   }
 
   setSideBombCollidingWith(x, y) {
-    const vec = new Vector2I(x, y);
+    const vec = new Vector2i(x, y);
     if (x || y) {
-      this.bombCollidingWithLevelCoords = new Vector2I(
+      this.bombCollidingWithLevelCoords = new Vector2i(
         this.getPositionX() / TILE_SIZE + x,
         this.getPositionY() / TILE_SIZE + y
       );
     } else {
-      this.bombCollidingWithLevelCoords = new Vector2I(0, 0);
+      this.bombCollidingWithLevelCoords = new Vector2i(0, 0);
     }
     this.sideBombCollidingWith = vec;
   }
 
   getBombCollidingWithCoordinates() {
-    return new Vector2I(this.bombCollidingWithLevelCoords);
+    return new Vector2i(this.bombCollidingWithLevelCoords);
   }
 
   setWin(val) {
